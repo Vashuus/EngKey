@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import IntEnum, auto
+from enum import IntEnum
 from functools import lru_cache
 from typing import Callable
 

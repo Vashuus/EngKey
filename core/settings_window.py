@@ -7,13 +7,15 @@ from tkinter import ttk, font as tkfont, colorchooser, filedialog
 from config import BG, SURFACE, FG, ACCENT, MUTED, SUBTEXT
 
 
+from languages import LANG
+from native.dialects import get_variants, LABELS
+from engines import list_engines
+from config_store import DEFAULT
+
+
 def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     h = hex_color.lstrip("#")
     return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
-from languages import LANG
-from native.dialects import has_dialects, get_variants, LABELS
-from engines import list_engines
-from config_store import DEFAULT
 
 COLOR_KEYS = ["BG", "SURFACE", "FG", "ACCENT", "MUTED", "SUBTEXT"]
 

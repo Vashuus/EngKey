@@ -2,7 +2,6 @@
 
 import os
 import tkinter as tk
-from tkinter import font as tkfont
 import queue
 import threading
 
@@ -16,7 +15,7 @@ from debouncer import Debouncer
 from translator import Translator
 from settings_window import Settings
 from native.dialects import LABELS as DIALECT_LABELS
-from engines import list_engines, ENGINE_REGISTRY
+from engines import ENGINE_REGISTRY
 from config_store import load as load_config, save as save_config, DEFAULT
 
 
