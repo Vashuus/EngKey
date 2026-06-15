@@ -1,0 +1,7 @@
+# Core
+deep-translator>=1.11,<2.0
+
+# Opcionales (según motor seleccionado)
+requests>=2.31,<3.0
+openai>=1.0,<2.0
+deepl>=1.16,<2.0

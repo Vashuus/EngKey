@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=EngKey
+Comment=Traductor en tiempo real — Escribe en tu idioma, obtén la traducción al instante
+Exec=/home/vashuus/EngKey/Linux/engkey.sh
+Icon=/home/vashuus/EngKey/Linux/icon.svg
+Terminal=false
+Type=Application
+Categories=Utility;TextTools;Office;Accessibility;
+StartupNotify=true
+Keywords=translate;traductor;english;espanol;keyboard;
