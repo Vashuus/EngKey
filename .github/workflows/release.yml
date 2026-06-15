@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build-linux:
     name: Linux (x86_64)
@@ -31,18 +34,16 @@ jobs:
           pyinstaller engkey.spec
 
       - name: Upload Linux binary
-        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: dist/EngKey
-          asset_name: EngKey-Linux-x86_64
-          asset_content_type: application/octet-stream
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" dist/EngKey --repo "${{ github.repository }}" --clobber
 
   build-windows:
     name: Windows (x86_64)
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -70,11 +71,8 @@ jobs:
             engkey.py
 
       - name: Upload Windows binary
-        uses: actions/upload-release-asset@v1
+        shell: pwsh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: dist/EngKey.exe
-          asset_name: EngKey-Windows-x86_64.exe
-          asset_content_type: application/octet-stream
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" dist/EngKey.exe --repo "${{ github.repository }}" --clobber
