@@ -6,6 +6,10 @@ EngKey is a desktop translator that translates text in real time as you type. It
 
 > This codebase is created with AI assistance.
 
+## Web Version
+
+Use EngKey directly in your browser at **[vashuus.github.io/EngKey](https://vashuus.github.io/EngKey/)** — no installation required.
+
 ## Features
 
 - Real-time translation while typing with 300ms debounce
@@ -189,7 +193,7 @@ pyinstaller --onefile --windowed --name EngKey `
 
 ### GitHub Actions (automatic)
 
-Every time you publish a Release on GitHub, the workflow in `.github/workflows/release.yml` builds Linux, macOS, and Windows binaries and attaches them automatically.
+Every time you publish a Release on GitHub, the workflow in `.github/workflows/release.yml` builds Linux, macOS, and Windows binaries and attaches them automatically. Pre-built binaries are also available on the [GitHub Pages site](https://vashuus.github.io/EngKey/).
 
 ## License
 
