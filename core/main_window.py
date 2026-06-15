@@ -4,6 +4,7 @@ import tkinter as tk
 import queue
 import threading
 
+from env import detect as detect_env
 from config import (
     BG, SURFACE, FG, ACCENT, MUTED, SUBTEXT,
     W, H, MIN_W, MIN_H, POS_OFFX, POS_OFFY, DEBOUNCE_MS,
@@ -20,7 +21,14 @@ from config_store import load as load_config, save as save_config
 class EngKey:
     """Floating translator application."""
 
-    def __init__(self):
+    def __init__(self, debug: bool = False):
+        # Detect runtime environment
+        self._env = detect_env()
+        self._debug = debug
+        if debug:
+            from env import print_summary
+            print_summary(self._env)
+
         self.root = tk.Tk()
         self.root.title("EngKey")
         self.root.attributes("-topmost", True)
@@ -60,6 +68,11 @@ class EngKey:
         self.root.protocol("WM_DELETE_WINDOW", self._quit)
         self.root.bind("<Escape>", lambda e: self._quit())
         self.root.after(100, self._input.focus_set)
+
+        if self._env["topmost_reliable"] == "unreliable":
+            self._flash("No display server detected - running in a TTY?")
+        elif self._env["topmost_reliable"] == "partial":
+            self._flash("Always-on-top may not work on this desktop", 3000)
 
     # ═══════════════════════════════════════════════════════════════════
     #  UI

@@ -40,7 +40,11 @@ coverage/
 *.log
 
 # Build artifacts
-*.spec
+*.AppImage
+
+# PyInstaller
+build/
+dist/
 *.dmg
 *.exe
 *.AppImage

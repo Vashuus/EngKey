@@ -16,10 +16,10 @@ EngKey/
     config.py           Visual and behavioral constants
     main_window.py      UI: input, output, buttons, threads
     settings_window.py  Settings dialog
+    env.py              Runtime environment detection
     debouncer.py        Typing debounce
     languages.py        Language list with ISO codes
-    native.py           Native Mode core (post-processing)
-    native/             Dialect rules per language
+    native/             Native Mode dialect rules (package)
 
   tests/                Pytest test suite
   engkey.sh             Launch script
@@ -168,7 +168,7 @@ python3 -m pytest tests/ -v -m "not e2e" --ignore=tests/test_e2e.py
 
 | Principle | Implementation |
 |-----------|---------------|
-| Single source of truth | All code in core/, copied to platforms |
+| Single source of truth | All code in core/ |
 | Plugin architecture | Engines register automatically |
 | Thread-safe UI | Background translation, queue.Queue for UI updates |
 | Graceful degradation | API failures return original text |

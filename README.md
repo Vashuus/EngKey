@@ -1,6 +1,10 @@
 # EngKey
 
-EngKey is a desktop translator that translates text in real time as you type. It appears as a floating overlay window, currently for Linux (X11). Uses Google Translate by default with support for DeepL, Microsoft Azure, LibreTranslate, and OpenAI GPT as alternative engines.
+**Platform: Linux** (X11/Wayland). Windows builds are available in Releases.
+
+EngKey is a desktop translator that translates text in real time as you type. It appears as a floating overlay window. Uses Google Translate by default with support for DeepL, Microsoft Azure, LibreTranslate, and OpenAI GPT as alternative engines.
+
+> This codebase is created with AI assistance. You describe the behavior, the AI generates the code.
 
 ## Features
 
@@ -98,8 +102,9 @@ EngKey/
   core/                 All Python source code
     engines.py          Translation engine registry (Strategy pattern)
     translator.py       Facade with LRU cache
-    main_window.py      Tkinter UI
+    main_window.py      Tkinter UI with environment detection
     settings_window.py  Settings dialog
+    env.py              Runtime environment detection (X11/Wayland/DE)
     native/             Native Mode dialect rules
     config_store.py     JSON config persistence
   tests/                Pytest test suite
