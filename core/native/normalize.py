@@ -12,29 +12,30 @@ import re
 # (one_word_form, expanded_form, language)
 # Sorted: longer entries first prevent false positives
 _COMPOUNDS: list[tuple[str, str, str]] = [
-    ("deacuerdo",     "de acuerdo",     "es"),
-    ("deacuerdo",     "de acuerdo",     "en"),
-    ("sobretodo",     "sobre todo",     "es"),
-    ("enfin",         "en fin",         "es"),
-    ("aveces",        "a veces",        "es"),
-    ("aparte",        "a parte",        "es"),
-    ("aparte",        "a parte",        "en"),
-    ("adonde",        "a donde",        "es"),
-    ("adonde",        "a donde",        "en"),
-    ("acercade",      "acerca de",      "es"),
-    ("acercade",      "acerca de",      "en"),
-    ("debajode",      "debajo de",      "es"),
-    ("delantede",     "delante de",     "es"),
-    ("detrasde",      "detras de",      "es"),
-    ("encimade",      "encima de",      "es"),
-    ("dentrode",      "dentro de",      "es"),
-    ("juntoa",        "junto a",        "es"),
-    ("lejosde",       "lejos de",       "es"),
-    ("fuerade",       "fuera de",       "es"),
+    ("deacuerdo", "de acuerdo", "es"),
+    ("deacuerdo", "de acuerdo", "en"),
+    ("sobretodo", "sobre todo", "es"),
+    ("enfin", "en fin", "es"),
+    ("aveces", "a veces", "es"),
+    ("aparte", "a parte", "es"),
+    ("aparte", "a parte", "en"),
+    ("adonde", "a donde", "es"),
+    ("adonde", "a donde", "en"),
+    ("acercade", "acerca de", "es"),
+    ("acercade", "acerca de", "en"),
+    ("debajode", "debajo de", "es"),
+    ("delantede", "delante de", "es"),
+    ("detrasde", "detras de", "es"),
+    ("encimade", "encima de", "es"),
+    ("dentrode", "dentro de", "es"),
+    ("juntoa", "junto a", "es"),
+    ("lejosde", "lejos de", "es"),
+    ("fuerade", "fuera de", "es"),
 ]
 
 
 _PATTERNS_BY_LANG: dict[str, list[tuple[re.Pattern, str]]] = {}
+
 
 def _build() -> None:
     _PATTERNS_BY_LANG.clear()

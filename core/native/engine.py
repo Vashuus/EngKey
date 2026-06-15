@@ -157,9 +157,7 @@ class NativeMode:
             {
                 "pattern": r.pattern,
                 "replacement": (
-                    r.replacement
-                    if isinstance(r.replacement, str)
-                    else "<function>"
+                    r.replacement if isinstance(r.replacement, str) else "<function>"
                 ),
                 "priority": r.priority.name if r.priority else "N/A",
                 "words": r._word_count,

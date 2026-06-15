@@ -20,8 +20,8 @@ DEFAULT = {
     # Appearance
     "font_family": "Segoe UI",
     "font_size": 11,
-    "bg_image": None,         # path to image file, or None
-    "custom_colors": {},      # override specific colors: {"BG": "#...", "ACCENT": "#...", ...}
+    "bg_image": None,  # path to image file, or None
+    "custom_colors": {},  # override specific colors: {"BG": "#...", "ACCENT": "#...", ...}
     "overlay_opacity": 0.25,  # 0.0-1.0, image overlay transparency on top of widgets
     "button_border_style": "default",  # "default" (flat) or "soft" (groove+bd1)
 }

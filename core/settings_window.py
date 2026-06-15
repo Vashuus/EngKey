@@ -17,6 +17,7 @@ def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     h = hex_color.lstrip("#")
     return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
 
+
 COLOR_KEYS = ["BG", "SURFACE", "FG", "ACCENT", "MUTED", "SUBTEXT"]
 
 
@@ -58,8 +59,9 @@ class Settings(tk.Toplevel):
         # ── Tab 1: Translation ───────────────────────────────────────
         trans_frame = tk.Frame(notebook, bg=SURFACE, padx=14, pady=14)
         notebook.add(trans_frame, text="  Translation  ")
-        self._build_translation_tab(trans_frame, source_code, target_code,
-                                     dialect, engine_id, api_key)
+        self._build_translation_tab(
+            trans_frame, source_code, target_code, dialect, engine_id, api_key
+        )
 
         # ── Tab 2: Appearance ─────────────────────────────────────────
         appear_frame = tk.Frame(notebook, bg=SURFACE, padx=14, pady=14)
@@ -70,52 +72,91 @@ class Settings(tk.Toplevel):
         btn_frame = tk.Frame(self, bg=BG)
         btn_frame.pack(fill="x", padx=14, pady=(0, 10))
 
-        tk.Button(btn_frame, text="Apply",
-                  font=("Segoe UI", 9, "bold"),
-                  bg=ACCENT, fg=BG,
-                  relief="flat", padx=16, pady=3, bd=0,
-                  cursor="hand2",
-                  command=self._apply).pack(side="right", padx=(6, 0))
+        tk.Button(
+            btn_frame,
+            text="Apply",
+            font=("Segoe UI", 9, "bold"),
+            bg=ACCENT,
+            fg=BG,
+            relief="flat",
+            padx=16,
+            pady=3,
+            bd=0,
+            cursor="hand2",
+            command=self._apply,
+        ).pack(side="right", padx=(6, 0))
 
-        tk.Button(btn_frame, text="Cancel",
-                  font=("Segoe UI", 9),
-                  bg=MUTED, fg=FG,
-                  relief="flat", padx=12, pady=3, bd=0,
-                  cursor="hand2",
-                  command=self.destroy).pack(side="right")
+        tk.Button(
+            btn_frame,
+            text="Cancel",
+            font=("Segoe UI", 9),
+            bg=MUTED,
+            fg=FG,
+            relief="flat",
+            padx=12,
+            pady=3,
+            bd=0,
+            cursor="hand2",
+            command=self.destroy,
+        ).pack(side="right")
 
     # ═══════════════════════════════════════════════════════════════════
     #  Translation tab
     # ═══════════════════════════════════════════════════════════════════
 
-    def _build_translation_tab(self, frame, source_code, target_code,
-                                dialect, engine_id, api_key):
+    def _build_translation_tab(
+        self, frame, source_code, target_code, dialect, engine_id, api_key
+    ):
         codes = [c for _, c in LANG]
         engines = list_engines()
 
-        tk.Label(frame, text="Source language:", font=("Segoe UI", 9),
-                 fg=SUBTEXT, bg=SURFACE, anchor="w").pack(fill="x")
+        tk.Label(
+            frame,
+            text="Source language:",
+            font=("Segoe UI", 9),
+            fg=SUBTEXT,
+            bg=SURFACE,
+            anchor="w",
+        ).pack(fill="x")
         self._src_var = tk.StringVar(value=source_code)
-        ttk.Combobox(frame, textvariable=self._src_var,
-                      values=codes, state="readonly", width=30).pack(
-            fill="x", pady=(0, 8))
+        ttk.Combobox(
+            frame, textvariable=self._src_var, values=codes, state="readonly", width=30
+        ).pack(fill="x", pady=(0, 8))
 
-        tk.Label(frame, text="Target language:", font=("Segoe UI", 9),
-                 fg=SUBTEXT, bg=SURFACE, anchor="w").pack(fill="x")
+        tk.Label(
+            frame,
+            text="Target language:",
+            font=("Segoe UI", 9),
+            fg=SUBTEXT,
+            bg=SURFACE,
+            anchor="w",
+        ).pack(fill="x")
         self._tgt_var = tk.StringVar(value=target_code)
-        tgt_menu = ttk.Combobox(frame, textvariable=self._tgt_var,
-                                 values=codes, state="readonly", width=30)
+        tgt_menu = ttk.Combobox(
+            frame, textvariable=self._tgt_var, values=codes, state="readonly", width=30
+        )
         tgt_menu.pack(fill="x", pady=(0, 10))
 
         sep = tk.Frame(frame, height=1, bg=MUTED)
         sep.pack(fill="x", pady=(0, 10))
 
-        tk.Label(frame, text="Translation API:", font=("Segoe UI", 9),
-                 fg=SUBTEXT, bg=SURFACE, anchor="w").pack(fill="x")
+        tk.Label(
+            frame,
+            text="Translation API:",
+            font=("Segoe UI", 9),
+            fg=SUBTEXT,
+            bg=SURFACE,
+            anchor="w",
+        ).pack(fill="x")
         engine_names = [f"{n}" for _, n in engines]
         self._eng_var = tk.StringVar(value=self._engine_name(engine_id, engines))
-        eng_menu = ttk.Combobox(frame, textvariable=self._eng_var,
-                                 values=engine_names, state="readonly", width=30)
+        eng_menu = ttk.Combobox(
+            frame,
+            textvariable=self._eng_var,
+            values=engine_names,
+            state="readonly",
+            width=30,
+        )
         eng_menu.pack(fill="x", pady=(0, 8))
         eng_menu.bind("<<ComboboxSelected>>", self._on_engine_change)
 
@@ -128,7 +169,9 @@ class Settings(tk.Toplevel):
             self._key_frame,
             text="API Key:",
             font=("Segoe UI", 9),
-            fg=SUBTEXT, bg=SURFACE, anchor="w",
+            fg=SUBTEXT,
+            bg=SURFACE,
+            anchor="w",
         )
         self._key_label.pack(fill="x")
 
@@ -140,7 +183,8 @@ class Settings(tk.Toplevel):
             key_row,
             textvariable=self._key_var,
             font=("Segoe UI", 9),
-            bg=BG, fg=FG,
+            bg=BG,
+            fg=FG,
             insertbackground=ACCENT,
             relief="flat",
             bd=4,
@@ -152,9 +196,12 @@ class Settings(tk.Toplevel):
             key_row,
             text="Show",
             font=("Segoe UI", 9),
-            bg=MUTED, fg=FG,
+            bg=MUTED,
+            fg=FG,
             relief="flat",
-            padx=4, pady=1, bd=0,
+            padx=4,
+            pady=1,
+            bd=0,
             cursor="hand2",
             command=self._toggle_key_visibility,
         )
@@ -172,7 +219,8 @@ class Settings(tk.Toplevel):
             text="Native Mode",
             variable=self._nat_var,
             font=("Segoe UI", 9),
-            fg=FG, bg=SURFACE,
+            fg=FG,
+            bg=SURFACE,
             selectcolor=BG,
             activebackground=SURFACE,
             activeforeground=FG,
@@ -181,9 +229,13 @@ class Settings(tk.Toplevel):
         )
         self._nat_cb.pack(side="left")
 
-        tk.Label(nat_frame, text="(Experimental)",
-                 font=("Segoe UI", 7),
-                 fg="#e06c75", bg=SURFACE).pack(side="left", padx=(4, 0))
+        tk.Label(
+            nat_frame,
+            text="(Experimental)",
+            font=("Segoe UI", 7),
+            fg="#e06c75",
+            bg=SURFACE,
+        ).pack(side="left", padx=(4, 0))
 
         dial_frame = tk.Frame(frame, bg=SURFACE)
         dial_frame.pack(fill="x", pady=(0, 10))
@@ -192,13 +244,16 @@ class Settings(tk.Toplevel):
             dial_frame,
             text="Dialect:",
             font=("Segoe UI", 9),
-            fg=SUBTEXT, bg=SURFACE,
+            fg=SUBTEXT,
+            bg=SURFACE,
         )
         self._dial_label.pack(side="left")
 
         variant_codes = self._get_variant_codes(target_code)
-        initial_dialect = dialect if dialect in variant_codes else (
-            variant_codes[0] if variant_codes else ""
+        initial_dialect = (
+            dialect
+            if dialect in variant_codes
+            else (variant_codes[0] if variant_codes else "")
         )
         self._dial_var = tk.StringVar(value=initial_dialect)
         self._dial_menu = ttk.Combobox(
@@ -214,7 +269,8 @@ class Settings(tk.Toplevel):
             dial_frame,
             text=LABELS.get(initial_dialect, ""),
             font=("Segoe UI", 8),
-            fg=SUBTEXT, bg=SURFACE,
+            fg=SUBTEXT,
+            bg=SURFACE,
         )
         self._dial_name.pack(side="left", padx=(4, 0))
 
@@ -230,8 +286,14 @@ class Settings(tk.Toplevel):
 
     def _build_appearance_tab(self, frame):
         # ── Font ─────────────────────────────────────────────────────
-        tk.Label(frame, text="Font:", font=("Segoe UI", 9),
-                 fg=SUBTEXT, bg=SURFACE, anchor="w").pack(fill="x")
+        tk.Label(
+            frame,
+            text="Font:",
+            font=("Segoe UI", 9),
+            fg=SUBTEXT,
+            bg=SURFACE,
+            anchor="w",
+        ).pack(fill="x")
         font_row = tk.Frame(frame, bg=SURFACE)
         font_row.pack(fill="x", pady=(0, 10))
 
@@ -239,21 +301,28 @@ class Settings(tk.Toplevel):
         current_family = self._appearance.get("font_family", DEFAULT["font_family"])
         self._font_family_var = tk.StringVar(value=current_family)
         font_menu = ttk.Combobox(
-            font_row, textvariable=self._font_family_var,
-            values=families, state="readonly", width=22,
+            font_row,
+            textvariable=self._font_family_var,
+            values=families,
+            state="readonly",
+            width=22,
         )
         font_menu.pack(side="left", padx=(0, 6))
 
         current_size = self._appearance.get("font_size", DEFAULT["font_size"])
         self._font_size_var = tk.StringVar(value=str(current_size))
         size_spin = tk.Spinbox(
-            font_row, from_=8, to=24,
+            font_row,
+            from_=8,
+            to=24,
             textvariable=self._font_size_var,
             font=("Segoe UI", 9),
             width=4,
-            bg=BG, fg=FG,
+            bg=BG,
+            fg=FG,
             buttonbackground=MUTED,
-            relief="flat", bd=4,
+            relief="flat",
+            bd=4,
         )
         size_spin.pack(side="left")
 
@@ -261,8 +330,14 @@ class Settings(tk.Toplevel):
         sep1 = tk.Frame(frame, height=1, bg=MUTED)
         sep1.pack(fill="x", pady=(0, 10))
 
-        tk.Label(frame, text="Colors:", font=("Segoe UI", 9),
-                 fg=SUBTEXT, bg=SURFACE, anchor="w").pack(fill="x")
+        tk.Label(
+            frame,
+            text="Colors:",
+            font=("Segoe UI", 9),
+            fg=SUBTEXT,
+            bg=SURFACE,
+            anchor="w",
+        ).pack(fill="x")
 
         self._color_vars: dict[str, tk.StringVar] = {}
         self._color_swatches: dict[str, tk.Canvas] = {}
@@ -272,6 +347,7 @@ class Settings(tk.Toplevel):
         colors_frame.pack(fill="x", pady=(0, 6))
 
         import config as cfg_mod
+
         for i, key in enumerate(COLOR_KEYS):
             row = tk.Frame(colors_frame, bg=SURFACE)
             row.pack(fill="x", pady=1)
@@ -281,37 +357,70 @@ class Settings(tk.Toplevel):
             var = tk.StringVar(value=current_val)
             self._color_vars[key] = var
 
-            swatch = tk.Canvas(row, width=18, height=18,
-                               bg=current_val, highlightthickness=1,
-                               highlightbackground=MUTED, bd=0)
+            swatch = tk.Canvas(
+                row,
+                width=18,
+                height=18,
+                bg=current_val,
+                highlightthickness=1,
+                highlightbackground=MUTED,
+                bd=0,
+            )
             swatch.pack(side="left", padx=(0, 4))
             self._color_swatches[key] = swatch
 
-            tk.Label(row, text=key, font=("Segoe UI", 9, "bold"),
-                     fg=SUBTEXT, bg=SURFACE, width=9, anchor="w").pack(side="left")
+            tk.Label(
+                row,
+                text=key,
+                font=("Segoe UI", 9, "bold"),
+                fg=SUBTEXT,
+                bg=SURFACE,
+                width=9,
+                anchor="w",
+            ).pack(side="left")
 
-            tk.Label(row, textvariable=var, font=("Segoe UI", 8),
-                     fg=MUTED, bg=SURFACE, width=10, anchor="w").pack(side="left")
+            tk.Label(
+                row,
+                textvariable=var,
+                font=("Segoe UI", 8),
+                fg=MUTED,
+                bg=SURFACE,
+                width=10,
+                anchor="w",
+            ).pack(side="left")
 
-            pick_btn = tk.Button(row, text="Pick",
-                                 font=("Segoe UI", 8),
-                                 bg=MUTED, fg=FG,
-                                 relief="flat", padx=6, pady=0, bd=0,
-                                 cursor="hand2",
-                                 command=lambda k=key, v=var,
-                                        s=self._color_swatches[key]:
-                                     self._pick_color(k, v, s))
+            pick_btn = tk.Button(
+                row,
+                text="Pick",
+                font=("Segoe UI", 8),
+                bg=MUTED,
+                fg=FG,
+                relief="flat",
+                padx=6,
+                pady=0,
+                bd=0,
+                cursor="hand2",
+                command=lambda k=key, v=var, s=self._color_swatches[
+                    key
+                ]: self._pick_color(k, v, s),
+            )
             pick_btn.pack(side="left", padx=(0, 2))
 
-            reset_btn = tk.Button(row, text="Default",
-                                  font=("Segoe UI", 8),
-                                  bg=MUTED, fg=FG,
-                                  relief="flat", padx=4, pady=0, bd=0,
-                                  cursor="hand2",
-                                  command=lambda k=key, v=var,
-                                         s=self._color_swatches[key],
-                                         d=default_val:
-                                     self._reset_color(k, v, s, d))
+            reset_btn = tk.Button(
+                row,
+                text="Default",
+                font=("Segoe UI", 8),
+                bg=MUTED,
+                fg=FG,
+                relief="flat",
+                padx=4,
+                pady=0,
+                bd=0,
+                cursor="hand2",
+                command=lambda k=key, v=var, s=self._color_swatches[
+                    key
+                ], d=default_val: self._reset_color(k, v, s, d),
+            )
             reset_btn.pack(side="left")
 
         sep2 = tk.Frame(frame, height=1, bg=MUTED)
@@ -320,10 +429,12 @@ class Settings(tk.Toplevel):
         current_style = self._appearance.get("button_border_style", "default")
         self._soft_borders_var = tk.BooleanVar(value=(current_style == "soft"))
         tk.Checkbutton(
-            frame, text="Soft button borders",
+            frame,
+            text="Soft button borders",
             variable=self._soft_borders_var,
             font=("Segoe UI", 9),
-            fg=FG, bg=SURFACE,
+            fg=FG,
+            bg=SURFACE,
             selectcolor=BG,
             activebackground=SURFACE,
             activeforeground=FG,
@@ -336,7 +447,8 @@ class Settings(tk.Toplevel):
 
     def _pick_color(self, key, var, swatch):
         result = colorchooser.askcolor(
-            title=f"Pick {key}", color=var.get(), parent=self)
+            title=f"Pick {key}", color=var.get(), parent=self
+        )
         if result and result[1]:
             var.set(result[1])
             swatch.configure(bg=result[1])
@@ -365,7 +477,8 @@ class Settings(tk.Toplevel):
         if not path or not os.path.isfile(path) or opacity <= 0.0:
             self._preview_label.config(
                 text="No image selected" if not path else "Image not found",
-                image="", fg=MUTED,
+                image="",
+                fg=MUTED,
             )
             self._preview_frame.configure(bg=BG)
             return
@@ -375,6 +488,7 @@ class Settings(tk.Toplevel):
 
         try:
             from PIL import Image, ImageTk
+
             img = Image.open(path).convert("RGBA")
             img.thumbnail((pw, ph), Image.LANCZOS)
 
@@ -389,12 +503,14 @@ class Settings(tk.Toplevel):
         except ImportError:
             self._preview_label.config(
                 text="Pillow required for preview",
-                image="", fg="#e06c75",
+                image="",
+                fg="#e06c75",
             )
         except Exception:
             self._preview_label.config(
                 text="Cannot load image",
-                image="", fg="#e06c75",
+                image="",
+                fg="#e06c75",
             )
 
     # ═══════════════════════════════════════════════════════════════════
@@ -419,6 +535,7 @@ class Settings(tk.Toplevel):
         name = self._eng_var.get()
         eng_id = self._eng_id_map.get(name, "google")
         from engines import ENGINE_REGISTRY
+
         cls = ENGINE_REGISTRY.get(eng_id)
         needs_key = cls.needs_key if cls else False
 
@@ -490,6 +607,7 @@ class Settings(tk.Toplevel):
         for key in COLOR_KEYS:
             val = self._color_vars[key].get()
             import config as cfg_mod
+
             default_val = getattr(cfg_mod, key, None)
             if val != default_val:
                 custom_colors[key] = val
@@ -501,7 +619,9 @@ class Settings(tk.Toplevel):
             font_size = DEFAULT["font_size"]
 
         bg_image = self._appearance.get("bg_image", DEFAULT["bg_image"])
-        overlay_opacity = self._appearance.get("overlay_opacity", DEFAULT["overlay_opacity"])
+        overlay_opacity = self._appearance.get(
+            "overlay_opacity", DEFAULT["overlay_opacity"]
+        )
 
         button_border_style = "soft" if self._soft_borders_var.get() else "default"
 

@@ -6,7 +6,6 @@ Se registran en ENGINE_REGISTRY para selección en Settings.
 
 import html
 
-
 # ── Registry ───────────────────────────────────────────────────────────────
 
 ENGINE_REGISTRY: dict[str, type["BaseEngine"]] = {}
@@ -29,6 +28,7 @@ def build_engine(engine_id: str, api_key: str = ""):
 
 # ── Base ───────────────────────────────────────────────────────────────────
 
+
 class BaseEngine:
     id = ""
     name = ""
@@ -50,6 +50,7 @@ class BaseEngine:
 
 # ── Google Translate (vía deep-translator) ────────────────────────────────
 
+
 class GoogleEngine(BaseEngine):
     id = "google"
     name = "Google Translate"
@@ -58,6 +59,7 @@ class GoogleEngine(BaseEngine):
     def _setup(self):
         try:
             from deep_translator import GoogleTranslator
+
             self._gt = GoogleTranslator
             self._available = True
         except ImportError:
@@ -65,14 +67,18 @@ class GoogleEngine(BaseEngine):
 
     def translate(self, text: str, source: str, target: str) -> str:
         if not self._available:
-            raise RuntimeError("deep-translator no instalado: pip install deep-translator")
+            raise RuntimeError(
+                "deep-translator no instalado: pip install deep-translator"
+            )
         result = self._gt(source=source, target=target).translate(text)
         return html.unescape(result)
+
 
 register(GoogleEngine)
 
 
 # ── DeepL ──────────────────────────────────────────────────────────────────
+
 
 class DeepLEngine(BaseEngine):
     id = "deepl"
@@ -84,6 +90,7 @@ class DeepLEngine(BaseEngine):
     def _setup(self):
         try:
             import deepl
+
             self._deepl = deepl
             self._available = True
         except ImportError:
@@ -98,13 +105,17 @@ class DeepLEngine(BaseEngine):
         lang = target.upper()
         if lang == "EN":
             lang = "EN-US"
-        result = client.translate_text(text, source_lang=source.upper() if source else None, target_lang=lang)
+        result = client.translate_text(
+            text, source_lang=source.upper() if source else None, target_lang=lang
+        )
         return result.text
+
 
 register(DeepLEngine)
 
 
 # ── Microsoft Azure Translator ─────────────────────────────────────────────
+
 
 class MicrosoftEngine(BaseEngine):
     id = "microsoft"
@@ -116,6 +127,7 @@ class MicrosoftEngine(BaseEngine):
     def _setup(self):
         try:
             import requests
+
             self._requests = requests
             self._available = True
         except ImportError:
@@ -127,6 +139,7 @@ class MicrosoftEngine(BaseEngine):
         if not self.api_key:
             raise RuntimeError("Azure Key no configurada")
         import uuid
+
         endpoint = "https://api.cognitive.microsofttranslator.com"
         path = "/translate?api-version=3.0"
         params = f"&from={source}&to={target}"
@@ -136,14 +149,18 @@ class MicrosoftEngine(BaseEngine):
             "X-ClientTraceId": str(uuid.uuid4()),
         }
         body = [{"text": text}]
-        r = self._requests.post(endpoint + path + params, headers=headers, json=body, timeout=10)
+        r = self._requests.post(
+            endpoint + path + params, headers=headers, json=body, timeout=10
+        )
         r.raise_for_status()
         return r.json()[0]["translations"][0]["text"]
+
 
 register(MicrosoftEngine)
 
 
 # ── LibreTranslate ─────────────────────────────────────────────────────────
+
 
 class LibreEngine(BaseEngine):
     id = "libre"
@@ -161,6 +178,7 @@ class LibreEngine(BaseEngine):
     def _setup(self):
         try:
             import requests
+
             self._requests = requests
             self._available = True
         except ImportError:
@@ -176,10 +194,12 @@ class LibreEngine(BaseEngine):
         r.raise_for_status()
         return r.json()["translatedText"]
 
+
 register(LibreEngine)
 
 
 # ── OpenAI GPT ─────────────────────────────────────────────────────────────
+
 
 class GPTEngine(BaseEngine):
     id = "gpt"
@@ -191,6 +211,7 @@ class GPTEngine(BaseEngine):
     def _setup(self):
         try:
             from openai import OpenAI
+
             self._OpenAI = OpenAI
             self._available = True
         except ImportError:
@@ -212,5 +233,6 @@ class GPTEngine(BaseEngine):
             temperature=0.1,
         )
         return r.choices[0].message.content.strip()
+
 
 register(GPTEngine)

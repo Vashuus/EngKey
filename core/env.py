@@ -106,7 +106,9 @@ def _topmost_reliable(
 
 def print_summary(env: dict):
     """Print a human-readable environment summary (for --debug)."""
-    print(f"Display server:  {'Wayland' if env['is_wayland'] else 'X11' if env['is_x11'] else 'none'}")
+    print(
+        f"Display server:  {'Wayland' if env['is_wayland'] else 'X11' if env['is_x11'] else 'none'}"
+    )
     print(f"Desktop:         {env['desktop']}")
     print(f"DISPLAY:         {env['display']}")
     print(f"WAYLAND_DISPLAY: {env['wayland_display']}")

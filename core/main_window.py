@@ -7,8 +7,19 @@ import threading
 
 from env import detect as detect_env
 from config import (
-    BG, SURFACE, FG, ACCENT, MUTED, SUBTEXT,
-    W, H, MIN_W, MIN_H, POS_OFFX, POS_OFFY, DEBOUNCE_MS,
+    BG,
+    SURFACE,
+    FG,
+    ACCENT,
+    MUTED,
+    SUBTEXT,
+    W,
+    H,
+    MIN_W,
+    MIN_H,
+    POS_OFFX,
+    POS_OFFY,
+    DEBOUNCE_MS,
 )
 from languages import LANG_NAMES
 from debouncer import Debouncer
@@ -34,6 +45,7 @@ class EngKey:
         self._debug = debug
         if debug:
             from env import print_summary
+
             print_summary(self._env)
 
         self.root = tk.Tk()
@@ -116,8 +128,12 @@ class EngKey:
         self._input.config(font=(family, size))
         self._lbl_out.config(font=(family, 9, "bold"))
         self._output.config(font=(family, size))
-        for btn in (self._copy_btn, self._invert_btn,
-                     self._settings_btn, self._clear_btn):
+        for btn in (
+            self._copy_btn,
+            self._invert_btn,
+            self._settings_btn,
+            self._clear_btn,
+        ):
             btn.config(font=(family, 9))
         self._status.config(font=(family, 8))
 
@@ -129,12 +145,15 @@ class EngKey:
             relief = "flat"
             bd = 0
 
-        for btn in (self._copy_btn, self._invert_btn,
-                     self._settings_btn, self._clear_btn):
+        for btn in (
+            self._copy_btn,
+            self._invert_btn,
+            self._settings_btn,
+            self._clear_btn,
+        ):
             btn.config(relief=relief, bd=bd)
 
-        self._copy_btn.config(bg=ACCENT, fg=BG,
-                              activebackground="#7aa2f7")
+        self._copy_btn.config(bg=ACCENT, fg=BG, activebackground="#7aa2f7")
 
     def _apply_overlay_tint(self, path: str | None, opacity: float) -> None:
         """Tint SURFACE widgets to simulate the image showing through.
@@ -144,8 +163,11 @@ class EngKey:
         When no image, original colours are restored.
         """
         surface_widgets = (
-            self._input, self._output,
-            self._invert_btn, self._settings_btn, self._clear_btn,
+            self._input,
+            self._output,
+            self._invert_btn,
+            self._settings_btn,
+            self._clear_btn,
         )
 
         if not path or not os.path.isfile(path) or opacity <= 0.0:
@@ -155,20 +177,19 @@ class EngKey:
 
         try:
             from PIL import Image
+
             img = Image.open(path).convert("RGBA")
             avg = img.resize((1, 1), Image.LANCZOS).getpixel((0, 0))[:3]
             bg_rgb = _hex_to_rgb(BG)
 
             # overlay_bg = blend(avg_img, BG, opacity)
             overlay = tuple(
-                int(avg[i] * opacity + bg_rgb[i] * (1 - opacity))
-                for i in range(3)
+                int(avg[i] * opacity + bg_rgb[i] * (1 - opacity)) for i in range(3)
             )
 
             # SURFACE → blend overlay (80%) with SURFACE (20%)
             s = _hex_to_rgb(SURFACE)
-            tint = tuple(min(255, int(overlay[i] * 0.8 + s[i] * 0.2))
-                         for i in range(3))
+            tint = tuple(min(255, int(overlay[i] * 0.8 + s[i] * 0.2)) for i in range(3))
             tint_hex = f"#{tint[0]:02x}{tint[1]:02x}{tint[2]:02x}"
 
             for w in surface_widgets:
@@ -197,6 +218,7 @@ class EngKey:
 
         try:
             from PIL import Image, ImageTk
+
             img = Image.open(path).convert("RGBA")
             img = img.resize((cw, ch), Image.LANCZOS)
 
@@ -247,19 +269,26 @@ class EngKey:
 
         # Input area
         self._lbl_in = tk.Label(
-            self.root, text="",
+            self.root,
+            text="",
             font=("Segoe UI", 9, "bold"),
-            fg=SUBTEXT, bg=BG, anchor="w",
+            fg=SUBTEXT,
+            bg=BG,
+            anchor="w",
         )
         self._lbl_in.pack(fill="x", padx=PX, pady=(10, 3))
 
         self._input = tk.Text(
-            self.root, height=3,
+            self.root,
+            height=3,
             font=("Segoe UI", 11),
-            bg=SURFACE, fg=FG,
+            bg=SURFACE,
+            fg=FG,
             insertbackground=ACCENT,
-            relief="flat", bd=6,
-            padx=8, pady=6,
+            relief="flat",
+            bd=6,
+            padx=8,
+            pady=6,
             wrap="word",
             highlightthickness=1,
             highlightbackground=MUTED,
@@ -270,18 +299,25 @@ class EngKey:
 
         # Output area
         self._lbl_out = tk.Label(
-            self.root, text="",
+            self.root,
+            text="",
             font=("Segoe UI", 9, "bold"),
-            fg=SUBTEXT, bg=BG, anchor="w",
+            fg=SUBTEXT,
+            bg=BG,
+            anchor="w",
         )
         self._lbl_out.pack(fill="x", padx=PX, pady=(8, 3))
 
         self._output = tk.Text(
-            self.root, height=3,
+            self.root,
+            height=3,
             font=("Segoe UI", 11),
-            bg=SURFACE, fg=ACCENT,
-            relief="flat", bd=6,
-            padx=8, pady=6,
+            bg=SURFACE,
+            fg=ACCENT,
+            relief="flat",
+            bd=6,
+            padx=8,
+            pady=6,
             wrap="word",
             highlightthickness=1,
             highlightbackground=MUTED,
@@ -295,10 +331,15 @@ class EngKey:
         bar.pack(fill="x", padx=PX, pady=(8, 10))
 
         self._copy_btn = tk.Button(
-            bar, text="",
+            bar,
+            text="",
             font=("Segoe UI", 9, "bold"),
-            bg=ACCENT, fg=BG,
-            relief="flat", padx=14, pady=4, bd=0,
+            bg=ACCENT,
+            fg=BG,
+            relief="flat",
+            padx=14,
+            pady=4,
+            bd=0,
             cursor="hand2",
             activebackground="#7aa2f7",
             command=self._copy,
@@ -306,10 +347,15 @@ class EngKey:
         self._copy_btn.pack(side="left", padx=(0, 6))
 
         self._invert_btn = tk.Button(
-            bar, text="Swap",
+            bar,
+            text="Swap",
             font=("Segoe UI", 9),
-            bg=SURFACE, fg=FG,
-            relief="flat", padx=10, pady=4, bd=0,
+            bg=SURFACE,
+            fg=FG,
+            relief="flat",
+            padx=10,
+            pady=4,
+            bd=0,
             cursor="hand2",
             activebackground=MUTED,
             command=self._invert,
@@ -317,10 +363,15 @@ class EngKey:
         self._invert_btn.pack(side="left", padx=(0, 6))
 
         self._settings_btn = tk.Button(
-            bar, text="Settings",
+            bar,
+            text="Settings",
             font=("Segoe UI", 9),
-            bg=SURFACE, fg=FG,
-            relief="flat", padx=8, pady=4, bd=0,
+            bg=SURFACE,
+            fg=FG,
+            relief="flat",
+            padx=8,
+            pady=4,
+            bd=0,
             cursor="hand2",
             activebackground=MUTED,
             command=self._open_settings,
@@ -328,10 +379,15 @@ class EngKey:
         self._settings_btn.pack(side="left")
 
         self._clear_btn = tk.Button(
-            bar, text="Clear",
+            bar,
+            text="Clear",
             font=("Segoe UI", 9),
-            bg=SURFACE, fg=FG,
-            relief="flat", padx=12, pady=4, bd=0,
+            bg=SURFACE,
+            fg=FG,
+            relief="flat",
+            padx=12,
+            pady=4,
+            bd=0,
             cursor="hand2",
             activebackground=MUTED,
             command=self._clear,
@@ -339,9 +395,11 @@ class EngKey:
         self._clear_btn.pack(side="left", padx=(6, 0))
 
         self._status = tk.Label(
-            bar, text="",
+            bar,
+            text="",
             font=("Segoe UI", 8),
-            fg=SUBTEXT, bg=BG,
+            fg=SUBTEXT,
+            bg=BG,
         )
         self._status.pack(side="right")
 
@@ -398,8 +456,7 @@ class EngKey:
             self._dialect = dialect
             self._translator.set_dialect(dialect)
 
-        font_changed = (font_family != self._font_family or
-                        font_size != self._font_size)
+        font_changed = font_family != self._font_family or font_size != self._font_size
         if font_changed:
             self._font_family = font_family
             self._font_size = font_size
@@ -419,20 +476,22 @@ class EngKey:
             if "BG" in custom_colors:
                 self.root.configure(bg=custom_colors["BG"])
 
-        save_config({
-            "engine": self._engine_id,
-            "api_key": self._api_key,
-            "source": self._src_code,
-            "target": self._tgt_code,
-            "native_mode": dialect is not None,
-            "dialect": dialect,
-            "font_family": self._font_family,
-            "font_size": self._font_size,
-            "bg_image": self._bg_image,
-            "custom_colors": self._custom_colors,
-            "overlay_opacity": self._overlay_opacity,
-            "button_border_style": self._button_border_style,
-        })
+        save_config(
+            {
+                "engine": self._engine_id,
+                "api_key": self._api_key,
+                "source": self._src_code,
+                "target": self._tgt_code,
+                "native_mode": dialect is not None,
+                "dialect": dialect,
+                "font_family": self._font_family,
+                "font_size": self._font_size,
+                "bg_image": self._bg_image,
+                "custom_colors": self._custom_colors,
+                "overlay_opacity": self._overlay_opacity,
+                "button_border_style": self._button_border_style,
+            }
+        )
 
         self._refresh_labels()
 
@@ -472,7 +531,9 @@ class EngKey:
             self._set_output("")
             return
         self._status.config(text="Translating...")
-        threading.Thread(target=self._translate_worker, args=(text,), daemon=True).start()
+        threading.Thread(
+            target=self._translate_worker, args=(text,), daemon=True
+        ).start()
 
     def _translate_worker(self, text: str):
         result = self._translator.translate(text)

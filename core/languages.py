@@ -8,14 +8,14 @@ so display names do not affect functionality.
 """
 
 LANG = [
-    ("English",              "en"),
-    ("Espanol (Spanish)",    "es"),
-    ("Deutsch (German)",     "de"),
-    ("Francais (French)",    "fr"),
-    ("Italiano (Italian)",   "it"),
-    ("Portugues (Portuguese)","pt"),
-    ("Russian",              "ru"),
-    ("Chinese simp.",        "zh-CN"),
+    ("English", "en"),
+    ("Espanol (Spanish)", "es"),
+    ("Deutsch (German)", "de"),
+    ("Francais (French)", "fr"),
+    ("Italiano (Italian)", "it"),
+    ("Portugues (Portuguese)", "pt"),
+    ("Russian", "ru"),
+    ("Chinese simp.", "zh-CN"),
 ]
 
 LANG_NAMES = {code: name for name, code in LANG}
