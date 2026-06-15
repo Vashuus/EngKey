@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-Pruebas automatizadas para EngKey usando Xvfb + xdotool.
-Verifica: apertura, escritura, traduccion, botones, cierre.
+Pruebas E2E para EngKey usando Xvfb + xdotool.
+
+⚠️  DEPRECATED: Usa `pytest tests/` en su lugar.
+    Este archivo se mantiene por compatibilidad.
+    Los tests nuevos están en tests/test_e2e.py (pytest).
 """
 
 import subprocess

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Ruff check
+        run: ruff check core/
+      - name: Black check
+        run: black --check core/
+      - name: MyPy check
+        run: mypy core/ || true  # no fallar aún si hay tipos incompletos
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Unit tests
+        run: |
+          python3 -m pytest tests/ -v -m "not e2e" --ignore=tests/test_e2e.py
+      - name: E2E tests (Xvfb)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xdotool xvfb
+          Xvfb :99 -screen 0 1280x720x24 &
+          sleep 1
+          DISPLAY=:99 python3 -m pytest tests/test_e2e.py -v
+        if: always()

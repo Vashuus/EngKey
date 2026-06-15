@@ -18,8 +18,9 @@ def test_en_gb_spelling():
 # ── Español ────────────────────────────────────────────────────────────────
 
 def test_es_ve_colloquial():
-    result = NativeMode.process("Thank you very much, I agree, no problem", "es-VE")
-    assert any(x in result.lower() for x in ["gracias", "vale", "dale"])
+    # NativeMode es post-procesado: el input ya debe estar en español
+    result = NativeMode.process("Muchas gracias, estoy de acuerdo, no hay problema", "es-VE")
+    assert any(x in result.lower() for x in ["gracias a ti", "dale", "da igual"])
 
 
 def test_unknown_dialect_noop():
