@@ -30,11 +30,15 @@ jobs:
         run: |
           pyinstaller engkey.spec
 
-      - name: Upload release asset
+      - name: Upload Linux binary
+        uses: actions/upload-release-asset@v1
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload "${{ github.event.release.tag_name }}" dist/EngKey#EngKey-Linux-x86_64
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: dist/EngKey
+          asset_name: EngKey-Linux-x86_64
+          asset_content_type: application/octet-stream
 
   build-windows:
     name: Windows (x86_64)
@@ -65,9 +69,12 @@ jobs:
             --add-data "core/native;core/native" `
             engkey.py
 
-      - name: Upload release asset
+      - name: Upload Windows binary
+        uses: actions/upload-release-asset@v1
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: pwsh
-        run: |
-          gh release upload "${{ github.event.release.tag_name }}" dist/EngKey.exe#EngKey-Windows-x86_64.exe
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: dist/EngKey.exe
+          asset_name: EngKey-Windows-x86_64.exe
+          asset_content_type: application/octet-stream
