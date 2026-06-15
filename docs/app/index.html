@@ -4,37 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EngKey - Web Translator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #11111b; --surface: #1e1e2e; --fg: #cdd6f4; --accent: #89b4fa; --muted: #585b70; --subtext: #a6adc8; }
+  :root { --bg: #0f0f15; --surface: #181820; --surface-soft: #1d1d28; --fg: #e2e2ec; --accent: #7aa9f5; --muted: #4a4a5a; --subtext: #9090a8; --radius: 12px; --radius-sm: 8px; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--fg); height: 100vh; display: flex; flex-direction: column; }
-  .header { background: var(--surface); padding: 0.8rem 1.2rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--muted); flex-shrink: 0; }
-  .header h1 { font-size: 1.2rem; color: var(--accent); }
-  .header a { color: var(--subtext); font-size: 0.85rem; text-decoration: none; margin-left: auto; }
+  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--fg); height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+  body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 20% 20%, rgba(122, 169, 245, 0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(122, 169, 245, 0.03) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+  .header { position: relative; z-index: 1; background: var(--surface); padding: 0.8rem 1.2rem; display: flex; align-items: center; gap: 0.8rem; border-bottom: 1px solid rgba(74, 74, 90, 0.2); flex-shrink: 0; }
+  .header h1 { font-size: 1.1rem; font-weight: 600; background: linear-gradient(135deg, #89b4fa, #b4d0fb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header span { color: var(--subtext); font-size: 0.8rem; font-weight: 400; }
+  .header a { color: var(--subtext); font-size: 0.82rem; text-decoration: none; margin-left: auto; transition: color 0.2s; font-weight: 500; }
   .header a:hover { color: var(--accent); }
-  .container { flex: 1; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; padding: 1rem; gap: 0.5rem; }
+  .container { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; padding: 1rem; gap: 0.5rem; }
   .lang-row { display: flex; gap: 0.5rem; align-items: center; }
-  .lang-row select { flex: 1; background: var(--surface); color: var(--fg); border: 1px solid var(--muted); padding: 0.5rem; border-radius: 6px; font-size: 0.9rem; }
+  .lang-row select { flex: 1; background: var(--surface); color: var(--fg); border: 1px solid rgba(74, 74, 90, 0.3); padding: 0.5rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-family: inherit; cursor: pointer; transition: border-color 0.2s; }
   .lang-row select:focus { outline: none; border-color: var(--accent); }
-  .swap-btn { background: var(--surface); color: var(--fg); border: 1px solid var(--muted); padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-  .swap-btn:hover { border-color: var(--accent); }
-  textarea { width: 100%; background: var(--surface); color: var(--fg); border: 1px solid var(--muted); border-radius: 8px; padding: 0.8rem; font-size: 1rem; resize: none; font-family: inherit; }
+  .swap-btn { background: var(--surface); color: var(--subtext); border: 1px solid rgba(74, 74, 90, 0.3); padding: 0.5rem 0.7rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 1rem; transition: border-color 0.2s, color 0.2s; }
+  .swap-btn:hover { border-color: var(--accent); color: var(--accent); }
+  textarea { width: 100%; background: var(--surface); color: var(--fg); border: 1px solid rgba(74, 74, 90, 0.25); border-radius: var(--radius); padding: 0.8rem; font-size: 0.95rem; resize: none; font-family: inherit; transition: border-color 0.2s; }
   textarea:focus { outline: none; border-color: var(--accent); }
   textarea::placeholder { color: var(--muted); }
   .input-area { flex: 0 0 auto; }
   .output-area { flex: 1; min-height: 120px; }
   .output-area textarea { height: 100%; }
-  .status { color: var(--subtext); font-size: 0.8rem; text-align: center; padding: 0.3rem; min-height: 1.5rem; }
-  .btn-row { display: flex; gap: 0.5rem; }
-  .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
-  .btn-primary { background: var(--accent); color: var(--bg); }
-  .btn-secondary { background: var(--muted); color: var(--fg); }
-  .btn:hover { opacity: 0.85; }
-  .footer { text-align: center; padding: 0.5rem; color: var(--muted); font-size: 0.75rem; border-top: 1px solid var(--surface); flex-shrink: 0; }
+  .status { color: var(--subtext); font-size: 0.78rem; text-align: center; padding: 0.3rem; min-height: 1.5rem; }
+  .btn-row { display: flex; gap: 0.4rem; align-items: center; }
+  .btn { padding: 0.45rem 1rem; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: 0.82rem; font-weight: 500; font-family: inherit; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: #0f0f15; box-shadow: 0 2px 8px rgba(122, 169, 245, 0.2); }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface); color: var(--fg); border: 1px solid rgba(74, 74, 90, 0.3); }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .footer { text-align: center; padding: 0.5rem; color: var(--muted); font-size: 0.75rem; border-top: 1px solid rgba(74, 74, 90, 0.1); flex-shrink: 0; position: relative; z-index: 1; }
   .footer a { color: var(--accent); text-decoration: none; }
   .error { color: #f38ba8; }
-  .switch { display: flex; gap: 0.5rem; align-items: center; }
-  .switch label { font-size: 0.85rem; color: var(--subtext); cursor: pointer; }
+  .switch { display: flex; gap: 0.4rem; align-items: center; margin-left: auto; }
+  .switch label { font-size: 0.82rem; color: var(--subtext); cursor: pointer; user-select: none; }
+  .switch input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
   @media (max-width: 400px) { .container { padding: 0.5rem; } }
 </style>
 </head>
@@ -94,7 +101,7 @@
     <textarea id="inputText" rows="4" placeholder="Type or paste text to translate..."></textarea>
   </div>
 
-  <div class="status" id="status">Translations powered by LibreTranslate</div>
+  <div class="status" id="status">Powered by Google Translate</div>
 
   <div class="btn-row">
     <button class="btn btn-primary" id="translateBtn">Translate</button>
@@ -112,7 +119,7 @@
 </div>
 
 <div class="footer">
-  <p>Powered by <a href="https://libretranslate.com" target="_blank">LibreTranslate</a> · <a href="https://github.com/Vashuus/EngKey">GitHub</a> · MIT License</p>
+  <p>Powered by Google Translate · <a href="https://github.com/Vashuus/EngKey">GitHub</a> · MIT License</p>
 </div>
 
 <script>
@@ -148,29 +155,18 @@ async function translate() {
   status.className = 'status';
 
   try {
-    const res = await fetch('https://libretranslate.com/translate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        q: text,
-        source: src,
-        target: tgt,
-        format: 'text'
-      })
-    });
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' + src + '&tl=' + tgt + '&dt=t&q=' + encodeURIComponent(text);
+    const res = await fetch(url);
 
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(err || `HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
 
     const data = await res.json();
-    outputText.value = data.translatedText;
-    status.textContent = 'Translated ✓';
+    outputText.value = data[0].map(function(s) { return s[0]; }).filter(Boolean).join('');
+    status.textContent = 'Translated \u2713';
     status.className = 'status';
   } catch (err) {
     console.error('Translation error:', err);
-    status.textContent = 'Translation failed. The service may be rate-limited. Try again in a moment.';
+    status.textContent = 'Translation failed. Check your connection or try again.';
     status.className = 'status error';
   } finally {
     isTranslating = false;
@@ -192,8 +188,8 @@ translateBtn.addEventListener('click', translate);
 clearBtn.addEventListener('click', () => {
   inputText.value = '';
   outputText.value = '';
-  status.textContent = 'Translations powered by LibreTranslate';
-  status.className = 'status';
+    status.textContent = 'Powered by Google Translate';
+    status.className = 'status';
   inputText.focus();
 });
 
