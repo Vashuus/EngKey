@@ -1,4 +1,4 @@
 #!/bin/bash
-# EngKey — delega al lanzador de la plataforma actual
+# EngKey launcher - Linux (autocontenido)
 DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$DIR/Linux/engkey.sh"
+exec python3 "$DIR/engkey.py"

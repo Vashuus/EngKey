@@ -22,7 +22,7 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 
-python3 Linux/engkey.py
+python3 engkey.py
 ```
 
 ### Dependencies
@@ -88,21 +88,23 @@ DISPLAY=:99 python3 -m pytest tests/test_e2e.py -v
 
 ```
 EngKey/
-  core/                   Single source of truth
-    engines.py            Translation engine registry (Strategy pattern)
-    translator.py         Facade with LRU cache
-    main_window.py        Tkinter UI
-    settings_window.py    Settings dialog
-    native/               Native Mode dialect rules
-    config_store.py       JSON config persistence
-  Linux/                  Linux entry point and scripts
-  tests/                  pytest test suite
-  sync.sh                 Syncs core/ -> Linux/
+  engkey.py             Entry point
+  core/                 All Python source code
+    engines.py          Translation engine registry (Strategy pattern)
+    translator.py       Facade with LRU cache
+    main_window.py      Tkinter UI
+    settings_window.py  Settings dialog
+    native/             Native Mode dialect rules
+    config_store.py     JSON config persistence
+  tests/                Pytest test suite
+  engkey.sh             Launch script
+  engkey.desktop        Desktop shortcut
+  icon.svg              App icon
 ```
 
 ### Key rule
 
-All source code lives in `core/`. The Linux/ folder is an exact copy plus platform-specific scripts, icons, and desktop entry. Run `sync.sh` to copy core/ to Linux/ after making changes.
+All source code lives in `core/`. The root `engkey.py` imports from `core/` via sys.path. Platform-specific files (launch scripts, icons) are at the root level.
 
 ### Adding a new translation engine
 

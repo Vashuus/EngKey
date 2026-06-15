@@ -6,12 +6,10 @@ This file describes the project structure for developers and AI assistants worki
 
 ```
 EngKey/
+  engkey.py             Entry point (imports from core/)
   COPILOT.md            This file - architecture reference
-  engkey.py             Root entry point (delegates to core/)
-  sync.sh               Copies core/ -> Linux/ Windows/ macOS/
 
-  core/                 Single source of truth for all code
-    engkey.py           Development entry point
+  core/                 All source code
     translator.py       Translation facade with LRU cache
     engines.py          Pluggable translation backends (Registry pattern)
     config_store.py     JSON persistence (~/.config/engkey/)
@@ -22,19 +20,18 @@ EngKey/
     languages.py        Language list with ISO codes
     native.py           Native Mode core (post-processing)
     native/             Dialect rules per language
-      dialects.py       Dialect registry
-      en.py             English (US, GB, slang, etc.)
-      es.py             Spanish (VE, MX, AR, ES, etc.)
-    test_engkey.py      Legacy E2E tests
 
-  Linux/                  Self-contained copy + platform scripts
+  tests/                Pytest test suite
+  engkey.sh             Launch script
+  engkey.desktop        Desktop shortcut
+  icon.svg              App icon
 
-  core/LICENSE          MIT
+  LICENSE               MIT
 ```
 
 ### Key rule
 
-All source code lives in `core/`. Linux/, Windows/, and macOS/ folders are exact copies plus their own launch scripts, icons, and platform configurations. `sync.sh` copies core/ to all platforms.
+All source code lives in `core/`. The root `engkey.py` imports from `core/` via sys.path. Platform-specific files (engkey.sh, engkey.desktop, icon.svg) are at the root level.
 
 ## Translation Engine System
 
@@ -147,19 +144,17 @@ User types text
 
 Saved when settings are applied, loaded at startup.
 
-## Platform structure example (Linux)
+## Project layout
 
 ```
-Linux/
-  engkey.py           Entry point
-  engkey.sh           Launch script
-  engkey.desktop      Desktop shortcut
-  icon.svg            App icon
-  test_engkey.py      Legacy tests
-  *.py                Exact copy from core/
+engkey.py             Entry point (imports from core/)
+engkey.sh             Launch script
+engkey.desktop        Desktop shortcut
+icon.svg              App icon
+test_engkey.py        Legacy E2E tests
+core/                 All Python source code
+tests/                Pytest test suite
 ```
-
-Linux is the only supported platform.
 
 ## Tests
 
