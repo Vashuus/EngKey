@@ -126,6 +126,61 @@ Create a class in `core/engines.py` that inherits from `BaseEngine` and implemen
 1. Create `core/native/<language>/<code>.py` with a `process(text) -> str` function
 2. Register it in `core/native/dialects.py`
 
+## Building portable binaries
+
+Portable builds bundle Python + Tkinter + all dependencies into a single executable with PyInstaller.
+
+### Linux
+
+```bash
+pip install pyinstaller
+pyinstaller engkey.spec
+# Output: dist/EngKey (ELF, ~16 MB)
+```
+
+### Windows (cross-compile from Linux)
+
+```bash
+# Install Python for Windows via wine
+wget https://www.python.org/ftp/python/3.12.9/python-3.12.9-amd64.exe
+wine python-3.12.9-amd64.exe /quiet InstallAllUsers=1 PrependPath=1
+
+# Install dependencies + pyinstaller
+wine pip install deep-translator requests pyinstaller
+
+# Build
+wine pyinstaller --onefile --windowed --name EngKey ^
+  --paths core ^
+  --hidden-import deep_translator ^
+  --hidden-import deepl ^
+  --hidden-import requests ^
+  --hidden-import openai ^
+  --add-data "core/native;core/native" ^
+  engkey.py
+# Output: dist/EngKey.exe (~20 MB)
+```
+
+### Windows (native)
+
+On a Windows machine with Python installed:
+
+```powershell
+pip install pyinstaller
+pyinstaller --onefile --windowed --name EngKey `
+  --paths core `
+  --hidden-import deep_translator `
+  --hidden-import deepl `
+  --hidden-import requests `
+  --hidden-import openai `
+  --add-data "core/native;core/native" `
+  engkey.py
+# Output: dist\EngKey.exe
+```
+
+### GitHub Actions (automatic)
+
+Every time you publish a Release on GitHub, the workflow in `.github/workflows/release.yml` builds both Linux and Windows binaries and attaches them automatically.
+
 ## License
 
 MIT - see LICENSE file.
