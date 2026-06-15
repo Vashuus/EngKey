@@ -13,6 +13,17 @@ EngKey is a desktop translator that translates text in real time as you type. It
 
 ## Installation
 
+### Dependencies
+
+Required: `deep-translator` (Google Translate engine, free, no API key).
+
+Optional (install only if you use that engine):
+- `deepl` for DeepL
+- `requests` for Microsoft Azure or LibreTranslate
+- `openai` for OpenAI GPT
+
+### Running
+
 ```bash
 git clone https://github.com/Vashuus/EngKey.git
 cd EngKey
@@ -25,14 +36,9 @@ pip install -r requirements.txt
 python3 engkey.py
 ```
 
-### Dependencies
+## Desktop environments
 
-Required: `deep-translator` (Google Translate engine, free, no API key).
-
-Optional (install only if you use that engine):
-- `deepl` for DeepL
-- `requests` for Microsoft Azure or LibreTranslate
-- `openai` for OpenAI GPT
+EngKey uses Tkinter, which is built on X11. It runs on both X11 and Wayland (via XWayland, included in most compositors). The always-on-top feature relies on X11 window manager protocols and may not work on all Wayland compositors. If you use Wayland and encounter window stacking issues, try a compositor with good XWayland support (GNOME, KDE, Sway).
 
 ## Translation engines
 
