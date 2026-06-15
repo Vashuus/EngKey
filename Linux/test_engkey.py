@@ -145,7 +145,7 @@ print("\n[6] Probar boton Copiar...")
 def test_copy():
     run(["xdotool", "windowfocus", wid])
     sleep(0.3)
-    click_button(wid, "Copiar")
+    click_button(wid, "Copy")
     sleep(0.3)
     assert app_proc.poll() is None, "App crasheo al copiar"
 test("Boton Copiar responde", test_copy)
@@ -154,7 +154,7 @@ print("\n[7] Escribir texto mas largo...")
 def test_long():
     run(["xdotool", "windowfocus", wid])
     sleep(0.3)
-    click_button(wid, "Limpiar")
+    click_button(wid, "Clear")
     sleep(0.3)
     texto = "Hoy es un lindo dia para probar esta aplicacion de traduccion"
     run(["xdotool", "type", "--window", wid, texto])

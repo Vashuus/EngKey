@@ -1,4 +1,4 @@
-"""Ventana principal de EngKey — overlay flotante con entrada/salida de texto."""
+"""Main window - floating overlay with input/output text areas."""
 
 import tkinter as tk
 import queue
@@ -18,7 +18,7 @@ from config_store import load as load_config, save as save_config
 
 
 class EngKey:
-    """Aplicación traductor flotante."""
+    """Floating translator application."""
 
     def __init__(self):
         self.root = tk.Tk()
@@ -31,15 +31,15 @@ class EngKey:
         self.root.geometry(f"{W}x{H}+{sw-W-POS_OFFX}+{sh-H-POS_OFFY}")
         self.root.minsize(MIN_W, MIN_H)
 
-        # Cargar configuración persistente
+        # Load persisted configuration
         cfg = load_config()
-        self._src_code = cfg.get("source", "es")
-        self._tgt_code = cfg.get("target", "en")
+        self._src_code = cfg.get("source", "en")
+        self._tgt_code = cfg.get("target", "es")
         self._dialect: str | None = cfg.get("dialect")
         self._engine_id = cfg.get("engine", "google")
         self._api_key = cfg.get("api_key", "")
 
-        # Componentes
+        # Components
         self._translator = Translator(
             source=self._src_code,
             target=self._tgt_code,
@@ -56,7 +56,7 @@ class EngKey:
         self._build_ui()
         self._poll_queue()
 
-        # Eventos
+        # Events
         self.root.protocol("WM_DELETE_WINDOW", self._quit)
         self.root.bind("<Escape>", lambda e: self._quit())
         self.root.after(100, self._input.focus_set)
@@ -66,10 +66,10 @@ class EngKey:
     # ═══════════════════════════════════════════════════════════════════
 
     def _build_ui(self):
-        # ── Entrada ───────────────────────────────────────────────────
+        # Input area
         self._lbl_in = tk.Label(
             self.root,
-            text="Español",
+            text="English",
             font=("Segoe UI", 9, "bold"),
             fg=SUBTEXT,
             bg=BG,
@@ -93,10 +93,10 @@ class EngKey:
         self._input.pack(fill="both", padx=10, pady=(0, 0), expand=True)
         self._input.bind("<KeyRelease>", lambda e: self._debouncer.poke())
 
-        # ── Salida ────────────────────────────────────────────────────
+        # Output area
         self._lbl_out = tk.Label(
             self.root,
-            text="English",
+            text="Spanish",
             font=("Segoe UI", 9, "bold"),
             fg=SUBTEXT,
             bg=BG,
@@ -119,13 +119,13 @@ class EngKey:
         self._output.pack(fill="both", padx=10, pady=(0, 0), expand=True)
         self._output.configure(state="disabled")
 
-        # ── Barra de botones ──────────────────────────────────────────
+        # Button bar
         bar = tk.Frame(self.root, bg=BG)
         bar.pack(fill="x", padx=10, pady=(6, 8))
 
         self._copy_btn = tk.Button(
             bar,
-            text="📋  Copiar inglés",
+            text="Copy",
             font=("Segoe UI", 9, "bold"),
             bg=ACCENT,
             fg=BG,
@@ -141,7 +141,7 @@ class EngKey:
 
         self._invert_btn = tk.Button(
             bar,
-            text="🔄  Invertir",
+            text="Swap",
             font=("Segoe UI", 9),
             bg=SURFACE,
             fg=FG,
@@ -157,10 +157,10 @@ class EngKey:
 
         self._settings_btn = tk.Button(
             bar,
-            text="⚙️",
-            font=("Segoe UI", 10),
+            text="Settings",
+            font=("Segoe UI", 9),
             bg=SURFACE,
-            fg=SUBTEXT,
+            fg=FG,
             relief="flat",
             padx=6,
             pady=3,
@@ -173,7 +173,7 @@ class EngKey:
 
         self._clear_btn = tk.Button(
             bar,
-            text="🗑  Limpiar",
+            text="Clear",
             font=("Segoe UI", 9),
             bg=SURFACE,
             fg=FG,
@@ -197,7 +197,7 @@ class EngKey:
         self._status.pack(side="right")
 
     # ═══════════════════════════════════════════════════════════════════
-    #  Configuración
+    #  Configuration
     # ═══════════════════════════════════════════════════════════════════
 
     def _open_settings(self):
@@ -219,26 +219,22 @@ class EngKey:
         engine_id: str,
         api_key: str,
     ):
-        # Motor
         engine_changed = engine_id != self._engine_id or api_key != self._api_key
         if engine_changed:
             self._engine_id = engine_id
             self._api_key = api_key
             self._translator.set_engine(engine_id, api_key)
 
-        # Dirección
         dir_changed = src != self._src_code or tgt != self._tgt_code
         if dir_changed:
             self._src_code = src
             self._tgt_code = tgt
             self._translator.set_direction(src, tgt)
 
-        # Dialecto
         if dialect != self._dialect:
             self._dialect = dialect
             self._translator.set_dialect(dialect)
 
-        # Persistir
         save_config({
             "engine": self._engine_id,
             "api_key": self._api_key,
@@ -252,10 +248,10 @@ class EngKey:
 
         if dialect:
             name = DIALECT_LABELS.get(dialect, dialect)
-            self._flash(f"🌿  {name}")
+            self._flash(f"Native: {name}")
         if engine_changed:
             eng_name = ENGINE_REGISTRY[self._engine_id].name
-            self._flash(f"⚡ {eng_name}")
+            self._flash(f"Engine: {eng_name}")
         if dir_changed:
             self._clear()
 
@@ -265,17 +261,17 @@ class EngKey:
 
         self._lbl_in.config(text=src_name)
         self._lbl_out.config(text=tgt_name)
-        self._copy_btn.config(text=f"📋  Copiar {tgt_name.lower()}")
+        self._copy_btn.config(text=f"Copy {tgt_name}")
 
         eng_name = ENGINE_REGISTRY[self._engine_id].name
-        label = f"⚡ {eng_name} — {src_name} → {tgt_name}"
+        label = f"{eng_name} - {src_name} > {tgt_name}"
         if self._dialect:
             name = DIALECT_LABELS.get(self._dialect, self._dialect)
-            label += f" 🌿  {name}"
+            label += f" Native: {name}"
         self.root.title(label)
 
     # ═══════════════════════════════════════════════════════════════════
-    #  Traducción
+    #  Translation
     # ═══════════════════════════════════════════════════════════════════
 
     def _translate(self):
@@ -283,7 +279,7 @@ class EngKey:
         if not text.strip():
             self._set_output("")
             return
-        self._status.config(text="✍️  traduciendo…")
+        self._status.config(text="Translating...")
         threading.Thread(target=self._translate_worker, args=(text,), daemon=True).start()
 
     def _translate_worker(self, text: str):
@@ -308,7 +304,7 @@ class EngKey:
         self.root.after(80, self._poll_queue)
 
     # ═══════════════════════════════════════════════════════════════════
-    #  Acciones
+    #  Actions
     # ═══════════════════════════════════════════════════════════════════
 
     def _copy(self):
@@ -317,7 +313,7 @@ class EngKey:
             return
         self.root.clipboard_clear()
         self.root.clipboard_append(text)
-        self._flash("✅  Copiado")
+        self._flash("Copied")
 
     def _clear(self):
         self._input.delete("1.0", "end")

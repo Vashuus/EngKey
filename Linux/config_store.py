@@ -1,6 +1,6 @@
-"""Persistencia simple de configuración en JSON.
+"""Simple JSON configuration persistence.
 
-Guarda en ~/.config/engkey/config.json:
+Stores in ~/.config/engkey/config.json:
   engine, api_key, source, target, dialect, native_mode
 """
 
@@ -13,8 +13,8 @@ CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 DEFAULT = {
     "engine": "google",
     "api_key": "",
-    "source": "es",
-    "target": "en",
+    "source": "en",
+    "target": "es",
     "native_mode": False,
     "dialect": None,
 }

@@ -2,14 +2,13 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security issue in EngKey, please **do not** open a public issue.
-Send a private report to the repository owner via GitHub.
+If you discover a security issue in EngKey, please do not open a public issue. Send a private report to the repository owner via GitHub.
 
 ## What to expect
 
 - Acknowledgment within 48 hours.
 - A fix will be released as soon as possible, typically within a week.
-- You will be credited in the release notes (if desired).
+- You will be credited in the release notes if desired.
 
 ## Scope
 

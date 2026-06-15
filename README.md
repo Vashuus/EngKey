@@ -1,155 +1,122 @@
-# EngKey — Traductor Flotante en Tiempo Real
+# EngKey
 
-EngKey es un traductor de escritorio que traduce **mientras escribes**, sin cambiar de ventana. Aparece como overlay flotante, compatible con **Linux, Windows y macOS**.
+EngKey is a desktop translator that translates text in real time as you type. It appears as a floating overlay window, currently for Linux (X11). Uses Google Translate by default with support for DeepL, Microsoft Azure, LibreTranslate, and OpenAI GPT as alternative engines.
 
-```
-┌──────────────────────────────────┐
-│  Español                         │ ← input: escribe en tu idioma
-│  ┌────────────────────────────┐  │
-│  │ Hola, como estas?          │  │
-│  └────────────────────────────┘  │
-│  English                         │ ← output: traducido al instante
-│  ┌────────────────────────────┐  │
-│  │ Hello, how are you?        │  │
-│  └────────────────────────────┘  │
-│  [📋 Copiar] [🔄 Invertir] ⚙️ 🗑 │
-└──────────────────────────────────┘
-```
+## Features
 
----
+- Real-time translation while typing with 300ms debounce
+- Multiple pluggable translation engines: Google, DeepL, Microsoft Azure, LibreTranslate, OpenAI GPT
+- Native Mode: post-processing per dialect (English contractions, British spelling, Venezuelan colloquialisms, etc.)
+- LRU cache (250 entries) to avoid repeated API calls
+- Persistent configuration at ~/.config/engkey/config.json
+- Each engine is optional: install only the ones you use
 
-## ✨ Características
-
-| Característica | Descripción |
-|---------------|-------------|
-| **Multi-API** | Google (default), DeepL, Microsoft Azure, LibreTranslate, OpenAI GPT |
-| **Modo Nativo** | Post-procesado por dialecto: contracciones (`gonna`), ortografía GB (`colour`), modismos VE (`dale`) |
-| **Seleccionable** | Elige motor y API key desde la UI de Configuración |
-| **Overlay flotante** | Siempre al frente, accesible con hotkey global |
-| **Caché LRU** | 250 entradas en memoria, sin llamadas repetidas |
-| **Persistencia local** | Config en `~/.config/engkey/config.json` |
-| **Offline-friendly** | Sin dependencias pesadas, cada motor es opcional |
-
----
-
-## 🚀 Instalación
-
-### Linux
+## Installation
 
 ```bash
-# 1. Clonar
-git clone https://github.com/vashuus/EngKey.git
+git clone https://github.com/Vashuus/EngKey.git
 cd EngKey
 
-# 2. Entorno virtual
 python3 -m venv .venv
 source .venv/bin/activate
 
-# 3. Dependencias
 pip install -r requirements.txt
 
-# 4. Ejecutar
 python3 Linux/engkey.py
 ```
 
-### Windows
+### Dependencies
 
-```powershell
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python Windows\engkey.py
+Required: `deep-translator` (Google Translate engine, free, no API key).
+
+Optional (install only if you use that engine):
+- `deepl` for DeepL
+- `requests` for Microsoft Azure or LibreTranslate
+- `openai` for OpenAI GPT
+
+## Translation engines
+
+| Engine | Quality | API Key Required | Install |
+|--------|---------|-----------------|---------|
+| Google Translate (default) | High | No | pip install deep-translator |
+| DeepL | Very high | Yes (free plan) | pip install deepl |
+| Microsoft Azure | High | Yes (free plan) | pip install requests |
+| LibreTranslate | Medium | No | pip install requests |
+| OpenAI GPT | Very high | Yes | pip install openai |
+
+To switch engines: open Settings (gear icon in the UI) -> select API -> enter API key if required.
+
+## Native Mode
+
+Native Mode applies linguistic rules to already-translated text to adapt it to a specific dialect. It is a post-processing step, not an alternative translation.
+
+| Dialect | Example transformation |
+|---------|----------------------|
+| en-US | "I am going to" -> "I'm gonna" |
+| en-GB | "color" -> "colour", "apartment" -> "flat" |
+| es-VE | "de acuerdo" -> "dale", "muchas gracias" -> "gracias a ti" |
+
+To enable: open Settings -> check Native Mode -> select a dialect. Only dialects available for the selected target language are shown.
+
+## Configuration
+
+Settings are saved to `~/.config/engkey/config.json`:
+
+```json
+{
+  "engine": "google",
+  "api_key": "",
+  "source": "en",
+  "target": "es",
+  "native_mode": false,
+  "dialect": null
+}
 ```
 
-### macOS
+## Tests
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-./macOS/EngKey.app/Contents/MacOS/EngKey
-```
-
----
-
-## ⚙️ Motores de Traducción
-
-| Motor | Calidad | Requiere API Key | Instalación |
-|-------|:-------:|:----------------:|-------------|
-| **Google Translate** (default) | ⭐⭐⭐⭐ | ❌ | `pip install deep-translator` |
-| **DeepL** | ⭐⭐⭐⭐⭐ | ✅ (gratis) | `pip install deepl` |
-| **Microsoft Azure** | ⭐⭐⭐⭐ | ✅ (gratis) | `pip install requests` |
-| **LibreTranslate** | ⭐⭐⭐ | ❌ | `pip install requests` |
-| **OpenAI GPT** | ⭐⭐⭐⭐⭐ | ✅ | `pip install openai` |
-
-Para cambiar de motor: abre **Configuración** (⚙️) → selecciona API → ingresa key (si aplica).
-
----
-
-## 🌿 Modo Nativo
-
-Post-procesado que adapta la traducción genérica al dialecto real:
-
-| Dialecto | Ejemplo |
-|----------|---------|
-| **en-US** | `"I am going to do what I want to do"` → `"I'm gonna do what I wanna do"` |
-| **en-GB** | `"color"` → `"colour"`, `"apartment"` → `"flat"`, `"center"` → `"centre"` |
-| **es-VE** | `"Thank you, I agree"` → `"Gracias, estoy dale"` |
-
-Actívalo en Configuración → check **Modo Nativo** → selecciona dialecto.
-
----
-
-## 🧪 Tests
-
-```bash
-# Unit tests (sin display)
+# Unit tests (no display required)
 python3 -m pytest tests/ -v -m "not e2e" --ignore=tests/test_e2e.py
 
-# E2E tests (requiere Xvfb + xdotool en Linux)
+# E2E tests (requires Xvfb + xdotool)
 Xvfb :99 -screen 0 1280x720x24 &
 DISPLAY=:99 python3 -m pytest tests/test_e2e.py -v
-
-# Todo junto
-python3 -m pytest tests/ -v
 ```
 
----
-
-## 🏗️ Arquitectura
+## Project structure
 
 ```
 EngKey/
-├── core/                    ★ Código fuente único
-│   ├── engines.py           Registro de motores (Registry pattern)
-│   ├── translator.py        Facade con caché LRU
-│   ├── main_window.py       UI con Tkinter
-│   ├── settings_window.py   Diálogo de configuración
-│   ├── native/              Pipeline de Modo Nativo
-│   └── config_store.py      Persistencia JSON local
-│
-├── Linux/  Windows/  macOS/ Copias + scripts de plataforma
-├── tests/                   Tests pytest
-├── sync.sh                  Sincroniza core/ → plataformas
-├── COPILOT.md               Contexto para asistentes AI
-└── OPENCODE.md              Auditoría de publicación
+  core/                   Single source of truth
+    engines.py            Translation engine registry (Strategy pattern)
+    translator.py         Facade with LRU cache
+    main_window.py        Tkinter UI
+    settings_window.py    Settings dialog
+    native/               Native Mode dialect rules
+    config_store.py       JSON config persistence
+  Linux/                  Linux entry point and scripts
+  tests/                  pytest test suite
+  sync.sh                 Syncs core/ -> Linux/
 ```
 
----
+### Key rule
 
-## 📝 Licencia
+All source code lives in `core/`. The Linux/ folder is an exact copy plus platform-specific scripts, icons, and desktop entry. Run `sync.sh` to copy core/ to Linux/ after making changes.
 
-MIT — ver [LICENSE](LICENSE).
+### Adding a new translation engine
 
----
+Create a class in `core/engines.py` that inherits from `BaseEngine` and implements `translate(text, source, target) -> str`. Call `register(YourEngine)` at module level. The engine appears automatically in the Settings menu. See `COPILOT.md` for a complete example.
 
-## 🤝 Contribuir
+### Adding a new dialect
 
-1. Fork → branch → PR
-2. Tests pasan: `pytest -q`
-3. Ruff clean: `ruff check .`
-4. Lee [`CONTRIBUTING.md`](CONTRIBUTING.md)
+1. Create `core/native/<language>/<code>.py` with a `process(text) -> str` function
+2. Register it in `core/native/dialects.py`
 
----
+## License
 
-*Parte del stack de productividad de [@vashuus](https://github.com/vashuus).*
+MIT - see LICENSE file.
+
+## Contributing
+
+Read CONTRIBUTING.md for details. Summary: fork, branch, changes, pytest, ruff, PR.

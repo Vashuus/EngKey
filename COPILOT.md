@@ -1,222 +1,181 @@
-# EngKey — Traductor Flotante Multisistema
+# EngKey - Architecture Reference
 
-Aplicación de escritorio que traduce texto en **tiempo real** mientras escribes en cualquier app. Overlay flotante con hotkey global y soporte multi-API. Compatible con **Linux, Windows y macOS** desde un mismo código base.
+This file describes the project structure for developers and AI assistants working on EngKey.
 
----
-
-##  Arquitectura
+## Architecture
 
 ```
 EngKey/
-├── COPILOT.md            ← este archivo
-├── engkey.py             ← entry point raíz (delega a core/)
-├── sync.sh               ← copia core/ → Linux/ Windows/ macOS/
-│
-├── core/                 ← ★ FUENTE ÚNICA de todo el código
-│   ├── engkey.py         ← entry point de desarrollo
-│   ├── translator.py     ← facade de traducción con caché LRU
-│   ├── engines.py        ← ★ backends de traducción intercambiables
-│   ├── config_store.py   ← persistencia JSON (~/.config/engkey/)
-│   ├── config.py         ← constantes visuales y de comportamiento
-│   ├── main_window.py    ← UI: input, output, botones, hilos
-│   ├── settings_window.py← diálogo de configuración
-│   ├── debouncer.py      ← debounce para escribir
-│   ├── languages.py      ← lista de idiomas con códigos ISO
-│   ├── native.py         ← core del Modo Nativo (post-procesado)
-│   ├── native/           ← reglas de dialecto por idioma
-│   │   ├── dialects.py   ← registro de dialectos
-│   │   ├── en.py         ← inglés (US, GB, slang, etc.)
-│   │   └── es.py         ← español (VE, MX, AR, ES, etc.)
-│   └── test_engkey.py    ← pruebas automatizadas con Tkinter real
-│
-├── Linux/   Windows/   macOS/   ← copias independientes (cada una tiene
-│   └── ...                        su propio entry point, script .sh/.bat,
-│                                  icono .desktop, etc.)
-│
-└── core/LICENSE          ← GPLv3
+  COPILOT.md            This file - architecture reference
+  engkey.py             Root entry point (delegates to core/)
+  sync.sh               Copies core/ -> Linux/ Windows/ macOS/
+
+  core/                 Single source of truth for all code
+    engkey.py           Development entry point
+    translator.py       Translation facade with LRU cache
+    engines.py          Pluggable translation backends (Registry pattern)
+    config_store.py     JSON persistence (~/.config/engkey/)
+    config.py           Visual and behavioral constants
+    main_window.py      UI: input, output, buttons, threads
+    settings_window.py  Settings dialog
+    debouncer.py        Typing debounce
+    languages.py        Language list with ISO codes
+    native.py           Native Mode core (post-processing)
+    native/             Dialect rules per language
+      dialects.py       Dialect registry
+      en.py             English (US, GB, slang, etc.)
+      es.py             Spanish (VE, MX, AR, ES, etc.)
+    test_engkey.py      Legacy E2E tests
+
+  Linux/                  Self-contained copy + platform scripts
+
+  core/LICENSE          MIT
 ```
 
-### Regla fundamental
+### Key rule
 
-> **Todo el código vive en `core/`.** Las carpetas `Linux/`, `Windows/`, `macOS/` son copias exactas más sus propios scripts de lanzamiento, iconos y configuraciones de plataforma. `sync.sh` copia `core/` → todas las plataformas.
+All source code lives in `core/`. Linux/, Windows/, and macOS/ folders are exact copies plus their own launch scripts, icons, and platform configurations. `sync.sh` copies core/ to all platforms.
 
----
+## Translation Engine System
 
-##  Sistema de Motores de Traducción
-
-El archivo `core/engines.py` implementa un **patrón Registry + Strategy**.
+`core/engines.py` implements a Registry + Strategy pattern.
 
 ```python
 from engines import build_engine, list_engines, ENGINE_REGISTRY
 
-engine = build_engine("google")          # Google Translate (gratis, sin key)
-engine = build_engine("deepl", api_key)  # DeepL (requiere key)
-engine.translate("Hola", "es", "en")     # → "Hello"
+engine = build_engine("google")          # Google Translate (free, no key)
+engine = build_engine("deepl", api_key)  # DeepL (requires key)
+engine.translate("Hello", "en", "es")    # -> "Hola"
 ```
 
-### Motores disponibles
+### Available engines
 
-| ID | Clase | Requiere Key | Calidad | Status |
-|----|-------|:-----------:|:-------:|:------:|
-| `google` | `GoogleEngine` | ❌ | ⭐⭐⭐⭐ | ✅ Default |
-| `deepl` | `DeepLEngine` | ✅ | ⭐⭐⭐⭐⭐ | ✅ |
-| `microsoft` | `MicrosoftEngine` | ✅ | ⭐⭐⭐⭐ | ✅ |
-| `libre` | `LibreEngine` | ❌ | ⭐⭐⭐ | ✅ |
-| `gpt` | `OpenAI GPT` | ✅ | ⭐⭐⭐⭐⭐ | ✅ |
+| ID | Class | Requires Key | Quality |
+|----|-------|:-----------:|:-------:|
+| google | GoogleEngine | No | High |
+| deepl | DeepLEngine | Yes | Very high |
+| microsoft | MicrosoftEngine | Yes | High |
+| libre | LibreEngine | No | Medium |
+| gpt | GPTEngine | Yes | Very high |
 
-**Cada motor:**
-- Hereda de `BaseEngine`
-- Implementa `translate(text, source, target) → str`
-- Se auto-registra con `@register`
-- Maneja `ImportError` si la librería no está instalada
+Each engine:
+- Inherits from `BaseEngine`
+- Implements `translate(text, source, target) -> str`
+- Auto-registers with `@register`
+- Handles `ImportError` if the library is not installed
 
-### Agregar un motor nuevo
+### Adding a new engine
 
 ```python
 from engines import BaseEngine, register
 
-class MiMotor(BaseEngine):
-    id = "mimoto"
-    name = "Mi Traductor"
+class MyEngine(BaseEngine):
+    id = "myengine"
+    name = "My Translator"
     needs_key = True
-    key_label = "API Key de MiMotor"
+    key_label = "MyEngine API Key"
 
     def _setup(self):
-        import mimoto
-        self._client = mimoto.Client(self.api_key)
+        import myengine
+        self._client = myengine.Client(self.api_key)
         self._available = True
 
     def translate(self, text, source, target):
         return self._client.translate(text, source, target)
 
-register(MiMotor)
+register(MyEngine)
 ```
 
-Aparece automáticamente en el menú de Configuración. **Sin Toque de manos.**
+It appears automatically in the Settings menu. Zero UI changes needed.
 
----
+## Native Mode
 
-##  Modo Nativo
-
-Sistema de post-procesado que adapta la traducción genérica a dialectos específicos.
+Post-processing system that adapts generic translation output to specific dialects.
 
 ```
-Traducción genérica:    "I'm going to do what I want because I have to"
-  ↓ Modo Nativo en-US   "I'm gonna do what I wanna do cuz I've to"
-  ↓ Modo Nativo en-GB   "I like the colour of your flat in the centre"
+Generic translation:  "I'm going to do what I want because I have to"
+  en-US Native Mode:  "I'm gonna do what I wanna do cuz I've to"
+  en-GB Native Mode:  "I like the colour of your flat in the centre"
 ```
 
-Implementado como un pipeline de reglas:
-1. **Contracciones** (`want to` → `wanna`, `going to` → `gonna`)
-2. **Modismos** (`no problem` → `no cap`, `thank you` → `cheers`)
-3. **Ortografía** (`color` → `colour`, `apartment` → `flat`)
-4. **Estilo** (formal ↔ informal, argot regional)
+Implemented as a rule pipeline:
+1. Contractions (want to -> wanna, going to -> gonna)
+2. Idioms (no problem -> no cap, thank you -> cheers)
+3. Spelling (color -> colour, apartment -> flat)
+4. Style (formal/informal, regional slang)
 
-Cada idioma tiene su archivo en `core/native/` con reglas específicas. El registro `dialects.py` mapea códigos ISO (`en-US`, `es-VE`) a sus implementaciones.
+Each language has a file in `core/native/` with specific rules. The `dialects.py` registry maps ISO codes (en-US, es-VE) to their implementations.
 
----
-
-##  Flujo de datos
+## Data flow
 
 ```
-Usuario escribe texto
-        │
-        ▼
-┌────────────────┐
-│  main_window   │
-│  ._input       │
-└────┬───────────┘
-     │ <KeyRelease>
-     ▼
-┌────────────────┐
-│  debouncer     │  ← espera 300ms sin escribir
-└────┬───────────┘
-     │
-     ▼
-┌────────────────┐
-│  translator    │  ← facade con caché LRU (250 entradas)
-│  .translate()  │
-└────┬───────────┘
-     │
-     ▼
-┌────────────────┐
-│  engine (API)  │  ← Google / DeepL / GPT / etc.
-│  .translate()  │
-└────┬───────────┘
-     │ resultado
-     ▼
-┌────────────────┐
-│  NativeMode    │  ← post-procesado si hay dialecto activo
-│  .process()    │
-└────┬───────────┘
-     │
-     ▼
-┌────────────────┐
-│  main_window   │
-│  ._output      │  ← actualizado vía cola thread-safe
-└────────────────┘
+User types text
+       |
+       v
+  main_window._input
+       | <KeyRelease>
+       v
+  debouncer           waits 300ms idle
+       |
+       v
+  translator          facade with LRU cache (250 entries)
+       |
+       v
+  engine (API)        Google / DeepL / GPT / etc.
+       | result
+       v
+  NativeMode          post-processing if dialect active
+       |
+       v
+  main_window._output updated via thread-safe queue
 ```
 
----
+## Persistence
 
-##  Persistencia
-
-`core/config_store.py` guarda configuración en `~/.config/engkey/config.json`:
+`core/config_store.py` saves configuration to `~/.config/engkey/config.json`:
 
 ```json
 {
   "engine": "google",
   "api_key": "",
-  "source": "es",
-  "target": "en",
+  "source": "en",
+  "target": "es",
   "native_mode": false,
   "dialect": null
 }
 ```
 
-Se guarda al aplicar cambios en Settings y se carga al iniciar.
+Saved when settings are applied, loaded at startup.
 
----
-
-##  Estructura de una plataforma (ej. Linux)
+## Platform structure example (Linux)
 
 ```
 Linux/
-├── engkey.py          ← entry point (mismo que core/engkey.py)
-├── engkey.sh          ← script bash para lanzar
-├── engkey.desktop     ← acceso directo .desktop
-├── icon.svg           ← ícono de la app
-├── test_engkey.py     ← tests
-├── native/            ← reglas de dialecto
-│   ├── __init__.py
-│   ├── dialects.py
-│   ├── en.py
-│   └── es.py
-└── *.py               ← copia exacta de core/
+  engkey.py           Entry point
+  engkey.sh           Launch script
+  engkey.desktop      Desktop shortcut
+  icon.svg            App icon
+  test_engkey.py      Legacy tests
+  *.py                Exact copy from core/
 ```
 
-Windows tiene `engkey.bat` y `engkey.ps1`. macOS tiene `EngKey.app/`.
+Linux is the only supported platform.
 
----
+## Tests
 
-##  Pruebas
-
-`test_engkey.py` lanza la app real con Tkinter, escribe texto, verifica salida, prueba APIs, botones, cierre con Escape. Corre en CI sin pantalla (usando `Xvfb` en Linux).
+`tests/` contains pytest tests. E2E tests use Xvfb for headless display.
 
 ```bash
-python3 Linux/test_engkey.py
-# → 7/7 tests pasan
+python3 -m pytest tests/ -v -m "not e2e" --ignore=tests/test_e2e.py
 ```
 
----
+## Design principles
 
-## Principios de diseño
-
-| Principio | Cómo se aplica |
+| Principle | Implementation |
 |-----------|---------------|
-| **Single source of truth** | Todo el código en `core/`, se copia a plataformas |
-| **Plugin architecture** | Motores de traducción se registran automáticamente |
-| **Thread-safe UI** | Traducción en background thread, cola `queue.Queue` para UI |
-| **Graceful degradation** | Si falla la API, devuelve el texto original |
-| **Offline-first config** | Config local JSON, sin servidor |
-| **Sin dependencias pesadas** | Solo `deep-translator` (default), el resto es opcional |
+| Single source of truth | All code in core/, copied to platforms |
+| Plugin architecture | Engines register automatically |
+| Thread-safe UI | Background translation, queue.Queue for UI updates |
+| Graceful degradation | API failures return original text |
+| Offline-first config | Local JSON config, no server required |
+| Minimal dependencies | Only deep-translator required; everything else is optional |

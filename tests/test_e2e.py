@@ -1,4 +1,4 @@
-"""Tests E2E con Xvfb + xdotool (saltar si no hay display)."""
+"""E2E tests using Xvfb + xdotool (skipped if no display)."""
 
 import subprocess
 import time
@@ -70,7 +70,7 @@ def app(xvfb):
     )
     time.sleep(2)
     wid = wait_for_window("EngKey", timeout=6)
-    assert wid is not None, "Ventana no apareció"
+    assert wid is not None, "Window did not appear"
     yield proc, wid
     if proc.poll() is None:
         proc.terminate()
@@ -84,7 +84,7 @@ def app(xvfb):
 class TestEngKeyE2E:
     def test_window_visible(self, app):
         proc, wid = app
-        assert proc.poll() is None, "App murió al iniciar"
+        assert proc.poll() is None, "App died on startup"
 
     def test_type_text(self, app):
         proc, wid = app
@@ -92,24 +92,24 @@ class TestEngKeyE2E:
         time.sleep(0.3)
         run(["xdotool", "type", "--window", wid, "Hola, como estas?"])
         time.sleep(1.5)
-        assert proc.poll() is None, "App crasheó al escribir"
+        assert proc.poll() is None, "App crashed while typing"
 
     def test_copy_button(self, app):
         proc, wid = app
         run(["xdotool", "windowfocus", wid])
         time.sleep(0.3)
-        click_button(wid, "Copiar")
+        click_button(wid, "Copy")
         time.sleep(0.3)
-        assert proc.poll() is None, "App crasheó al copiar"
+        assert proc.poll() is None, "App crashed when copying"
 
     def test_long_text(self, app):
         proc, wid = app
-        click_button(wid, "Limpiar")
+        click_button(wid, "Clear")
         time.sleep(0.3)
         texto = "Hoy es un lindo dia para probar esta aplicacion de traduccion"
         run(["xdotool", "type", "--window", wid, texto])
         time.sleep(2)
-        assert proc.poll() is None, "App crasheó con texto largo"
+        assert proc.poll() is None, "App crashed with long text"
 
     def test_escape_closes(self, app):
         proc, wid = app
