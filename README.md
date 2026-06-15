@@ -1,6 +1,6 @@
 # EngKey
 
-**Platform: Linux** (X11/Wayland). Windows builds are available in Releases.
+**Platform: Linux** (X11/Wayland). macOS and Windows builds are available in Releases.
 
 EngKey is a desktop translator that translates text in real time as you type. It appears as a floating overlay window. Uses Google Translate by default with support for DeepL, Microsoft Azure, LibreTranslate, and OpenAI GPT as alternative engines.
 
@@ -83,7 +83,13 @@ Settings are saved to `~/.config/engkey/config.json`:
   "source": "en",
   "target": "es",
   "native_mode": false,
-  "dialect": null
+  "dialect": null,
+  "font_family": "Segoe UI",
+  "font_size": 11,
+  "bg_image": null,
+  "custom_colors": {},
+  "overlay_opacity": 0.25,
+  "button_border_style": "default"
 }
 ```
 
@@ -123,7 +129,7 @@ All source code lives in `core/`. The root `engkey.py` imports from `core/` via 
 
 ### Adding a new translation engine
 
-Create a class in `core/engines.py` that inherits from `BaseEngine` and implements `translate(text, source, target) -> str`. Call `register(YourEngine)` at module level. The engine appears automatically in the Settings menu. See `COPILOT.md` for a complete example.
+Create a class in `core/engines.py` that inherits from `BaseEngine` and implements `translate(text, source, target) -> str`. Call `register(YourEngine)` at module level. The engine appears automatically in the Settings menu. See `ARCHITECTURE.md` for a complete example.
 
 ### Adding a new dialect
 
@@ -183,7 +189,7 @@ pyinstaller --onefile --windowed --name EngKey `
 
 ### GitHub Actions (automatic)
 
-Every time you publish a Release on GitHub, the workflow in `.github/workflows/release.yml` builds both Linux and Windows binaries and attaches them automatically.
+Every time you publish a Release on GitHub, the workflow in `.github/workflows/release.yml` builds Linux, macOS, and Windows binaries and attaches them automatically.
 
 ## License
 

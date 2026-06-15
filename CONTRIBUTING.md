@@ -11,7 +11,7 @@
 
 ## Adding a new translation engine
 
-Create a class in `core/engines.py` that inherits from `BaseEngine` and implements `translate(text, source, target) -> str`. Call `register(YourEngine)` at module level. The engine appears automatically in the Settings UI - no UI changes needed. See `COPILOT.md` for a complete example.
+Create a class in `core/engines.py` that inherits from `BaseEngine` and implements `translate(text, source, target) -> str`. Call `register(YourEngine)` at module level. The engine appears automatically in the Settings UI - no UI changes needed. See `ARCHITECTURE.md` for a complete example.
 
 ## Adding a new dialect (Native Mode)
 

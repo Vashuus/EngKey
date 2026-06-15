@@ -11,7 +11,7 @@ EngKey/
 ├── engkey.desktop         Desktop shortcut
 ├── icon.svg               App icon
 ├── LICENSE                MIT license
-├── COPILOT.md             This file - architecture reference
+├── ARCHITECTURE.md        This file - architecture reference
 ├── core/                  All Python source code
 │   ├── translator.py      Translation facade with LRU cache
 │   ├── engines.py         Pluggable translation backends (Registry pattern)
@@ -306,7 +306,7 @@ Engines gracefully degrade if their library is missing.
    - Create files in `core/`
    - Write tests in `tests/`
    - Update this document if architecture changes
-5. Submit PR with tests + COPILOT.md updates
+5. Submit PR with tests + ARCHITECTURE.md updates
 
 ---
 
