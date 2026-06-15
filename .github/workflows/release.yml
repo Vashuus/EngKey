@@ -37,7 +37,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey#EngKey-Linux-x86_64" --repo "${{ github.repository }}" --clobber
+          mv dist/EngKey dist/EngKey-Linux-x86_64
+          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey-Linux-x86_64" --repo "${{ github.repository }}" --clobber
 
   build-windows:
     name: Windows (x86_64)
@@ -64,8 +65,15 @@ jobs:
           pyinstaller --onefile --windowed --name EngKey `
             --paths core `
             --hidden-import deep_translator `
+            --hidden-import deep_translator.google `
             --hidden-import deepl `
             --hidden-import requests `
+            --hidden-import requests.models `
+            --hidden-import urllib3 `
+            --hidden-import certifi `
+            --hidden-import bs4 `
+            --hidden-import soupsieve `
+            --hidden-import charset_normalizer `
             --hidden-import openai `
             --add-data "core/native;core/native" `
             engkey.py
@@ -75,7 +83,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey.exe#EngKey-Windows-x86_64.exe" --repo "${{ github.repository }}" --clobber
+          Move-Item -Path dist/EngKey.exe -Destination dist/EngKey-Windows-x86_64.exe
+          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey-Windows-x86_64.exe" --repo "${{ github.repository }}" --clobber
 
   build-macos:
     name: macOS (x86_64)
@@ -100,8 +109,15 @@ jobs:
           pyinstaller --onefile --windowed --name EngKey \
             --paths core \
             --hidden-import deep_translator \
+            --hidden-import deep_translator.google \
             --hidden-import deepl \
             --hidden-import requests \
+            --hidden-import requests.models \
+            --hidden-import urllib3 \
+            --hidden-import certifi \
+            --hidden-import bs4 \
+            --hidden-import soupsieve \
+            --hidden-import charset_normalizer \
             --hidden-import openai \
             --add-data "core/native:core/native" \
             engkey.py
@@ -110,4 +126,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey#EngKey-macOS-x86_64" --repo "${{ github.repository }}" --clobber
+          mv dist/EngKey dist/EngKey-macOS-x86_64
+          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey-macOS-x86_64" --repo "${{ github.repository }}" --clobber
