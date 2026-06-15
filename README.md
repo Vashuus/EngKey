@@ -4,7 +4,7 @@
 
 EngKey is a desktop translator that translates text in real time as you type. It appears as a floating overlay window. Uses Google Translate by default with support for DeepL, Microsoft Azure, LibreTranslate, and OpenAI GPT as alternative engines.
 
-> This codebase is created with AI assistance. You describe the behavior, the AI generates the code.
+> This codebase is created with AI assistance.
 
 ## Features
 
