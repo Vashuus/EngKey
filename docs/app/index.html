@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EngKey - Web Translator</title>
+<style>
+  :root { --bg: #11111b; --surface: #1e1e2e; --fg: #cdd6f4; --accent: #89b4fa; --muted: #585b70; --subtext: #a6adc8; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--fg); height: 100vh; display: flex; flex-direction: column; }
+  .header { background: var(--surface); padding: 0.8rem 1.2rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid var(--muted); flex-shrink: 0; }
+  .header h1 { font-size: 1.2rem; color: var(--accent); }
+  .header a { color: var(--subtext); font-size: 0.85rem; text-decoration: none; margin-left: auto; }
+  .header a:hover { color: var(--accent); }
+  .container { flex: 1; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; padding: 1rem; gap: 0.5rem; }
+  .lang-row { display: flex; gap: 0.5rem; align-items: center; }
+  .lang-row select { flex: 1; background: var(--surface); color: var(--fg); border: 1px solid var(--muted); padding: 0.5rem; border-radius: 6px; font-size: 0.9rem; }
+  .lang-row select:focus { outline: none; border-color: var(--accent); }
+  .swap-btn { background: var(--surface); color: var(--fg); border: 1px solid var(--muted); padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 1rem; }
+  .swap-btn:hover { border-color: var(--accent); }
+  textarea { width: 100%; background: var(--surface); color: var(--fg); border: 1px solid var(--muted); border-radius: 8px; padding: 0.8rem; font-size: 1rem; resize: none; font-family: inherit; }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  textarea::placeholder { color: var(--muted); }
+  .input-area { flex: 0 0 auto; }
+  .output-area { flex: 1; min-height: 120px; }
+  .output-area textarea { height: 100%; }
+  .status { color: var(--subtext); font-size: 0.8rem; text-align: center; padding: 0.3rem; min-height: 1.5rem; }
+  .btn-row { display: flex; gap: 0.5rem; }
+  .btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-secondary { background: var(--muted); color: var(--fg); }
+  .btn:hover { opacity: 0.85; }
+  .footer { text-align: center; padding: 0.5rem; color: var(--muted); font-size: 0.75rem; border-top: 1px solid var(--surface); flex-shrink: 0; }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .error { color: #f38ba8; }
+  .switch { display: flex; gap: 0.5rem; align-items: center; }
+  .switch label { font-size: 0.85rem; color: var(--subtext); cursor: pointer; }
+  @media (max-width: 400px) { .container { padding: 0.5rem; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>EngKey</h1>
+  <span style="font-size:0.8rem;color:var(--subtext)">Web Translator</span>
+  <a href="../">Download Desktop App</a>
+</div>
+
+<div class="container">
+  <div class="lang-row">
+    <select id="srcLang">
+      <option value="auto">Auto-detect</option>
+      <option value="en" selected>English</option>
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="it">Italian</option>
+      <option value="pt">Portuguese</option>
+      <option value="ru">Russian</option>
+      <option value="ja">Japanese</option>
+      <option value="ko">Korean</option>
+      <option value="zh">Chinese</option>
+      <option value="ar">Arabic</option>
+      <option value="nl">Dutch</option>
+      <option value="pl">Polish</option>
+      <option value="tr">Turkish</option>
+      <option value="vi">Vietnamese</option>
+      <option value="th">Thai</option>
+      <option value="hi">Hindi</option>
+    </select>
+    <button class="swap-btn" id="swapBtn" title="Swap languages">⇄</button>
+    <select id="tgtLang">
+      <option value="es" selected>Spanish</option>
+      <option value="en">English</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="it">Italian</option>
+      <option value="pt">Portuguese</option>
+      <option value="ru">Russian</option>
+      <option value="ja">Japanese</option>
+      <option value="ko">Korean</option>
+      <option value="zh">Chinese</option>
+      <option value="ar">Arabic</option>
+      <option value="nl">Dutch</option>
+      <option value="pl">Polish</option>
+      <option value="tr">Turkish</option>
+      <option value="vi">Vietnamese</option>
+      <option value="th">Thai</option>
+      <option value="hi">Hindi</option>
+    </select>
+  </div>
+
+  <div class="input-area">
+    <textarea id="inputText" rows="4" placeholder="Type or paste text to translate..."></textarea>
+  </div>
+
+  <div class="status" id="status">Translations powered by LibreTranslate</div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="translateBtn">Translate</button>
+    <button class="btn btn-secondary" id="clearBtn">Clear</button>
+    <button class="btn btn-secondary" id="copyBtn">Copy</button>
+    <div class="switch" style="margin-left:auto">
+      <label for="autoTranslate">Auto</label>
+      <input type="checkbox" id="autoTranslate" checked>
+    </div>
+  </div>
+
+  <div class="output-area">
+    <textarea id="outputText" rows="4" placeholder="Translation..." readonly></textarea>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Powered by <a href="https://libretranslate.com" target="_blank">LibreTranslate</a> · <a href="https://github.com/Vashuus/EngKey">GitHub</a> · MIT License</p>
+</div>
+
+<script>
+const srcLang = document.getElementById('srcLang');
+const tgtLang = document.getElementById('tgtLang');
+const inputText = document.getElementById('inputText');
+const outputText = document.getElementById('outputText');
+const translateBtn = document.getElementById('translateBtn');
+const clearBtn = document.getElementById('clearBtn');
+const copyBtn = document.getElementById('copyBtn');
+const swapBtn = document.getElementById('swapBtn');
+const autoTranslate = document.getElementById('autoTranslate');
+const status = document.getElementById('status');
+
+let debounceTimer = null;
+let isTranslating = false;
+
+async function translate() {
+  const text = inputText.value.trim();
+  if (!text || isTranslating) return;
+
+  const src = srcLang.value;
+  const tgt = tgtLang.value;
+
+  if (src === tgt && src !== 'auto') {
+    outputText.value = text;
+    status.textContent = 'Same language — no translation needed.';
+    return;
+  }
+
+  isTranslating = true;
+  status.textContent = 'Translating...';
+  status.className = 'status';
+
+  try {
+    const res = await fetch('https://libretranslate.com/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: text,
+        source: src,
+        target: tgt,
+        format: 'text'
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    outputText.value = data.translatedText;
+    status.textContent = 'Translated ✓';
+    status.className = 'status';
+  } catch (err) {
+    console.error('Translation error:', err);
+    status.textContent = 'Translation failed. The service may be rate-limited. Try again in a moment.';
+    status.className = 'status error';
+  } finally {
+    isTranslating = false;
+  }
+}
+
+function onInputChange() {
+  if (autoTranslate.checked) {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(translate, 400);
+  }
+}
+
+inputText.addEventListener('input', onInputChange);
+srcLang.addEventListener('change', onInputChange);
+tgtLang.addEventListener('change', onInputChange);
+translateBtn.addEventListener('click', translate);
+
+clearBtn.addEventListener('click', () => {
+  inputText.value = '';
+  outputText.value = '';
+  status.textContent = 'Translations powered by LibreTranslate';
+  status.className = 'status';
+  inputText.focus();
+});
+
+copyBtn.addEventListener('click', async () => {
+  if (!outputText.value) return;
+  try {
+    await navigator.clipboard.writeText(outputText.value);
+    const orig = status.textContent;
+    status.textContent = 'Copied! ✓';
+    setTimeout(() => { status.textContent = orig; }, 1500);
+  } catch {
+    status.textContent = 'Failed to copy';
+  }
+});
+
+swapBtn.addEventListener('click', () => {
+  if (srcLang.value === 'auto') return;
+  const tmp = srcLang.value;
+  srcLang.value = tgtLang.value;
+  tgtLang.value = tmp;
+  const tmpText = inputText.value;
+  inputText.value = outputText.value;
+  outputText.value = '';
+  if (autoTranslate.checked && inputText.value.trim()) translate();
+});
+</script>
+</body>
+</html>
