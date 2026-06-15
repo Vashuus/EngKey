@@ -37,7 +37,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" dist/EngKey --repo "${{ github.repository }}" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey#EngKey-Linux-x86_64" --repo "${{ github.repository }}" --clobber
 
   build-windows:
     name: Windows (x86_64)
@@ -75,4 +75,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" dist/EngKey.exe --repo "${{ github.repository }}" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "dist/EngKey.exe#EngKey-Windows-x86_64.exe" --repo "${{ github.repository }}" --clobber
