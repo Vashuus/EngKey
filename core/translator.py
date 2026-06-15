@@ -70,6 +70,8 @@ class Translator:
             result = text
 
         if self._dialect:
+            # EXPERIMENTAL: Native Mode post-processing may produce
+            # unexpected results in some contexts. See NATIVE_MODE_IMPROVEMENTS.md.
             result = NativeMode.process(result, self._dialect)
 
         with self._lock:

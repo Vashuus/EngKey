@@ -58,6 +58,8 @@ To switch engines: open Settings (gear icon in the UI) -> select API -> enter AP
 
 ## Native Mode
 
+**EXPERIMENTAL**: Native Mode is a best-effort post-processing feature. Some phrases may contain errors or unexpected transformations. See [NATIVE_MODE_IMPROVEMENTS.md](NATIVE_MODE_IMPROVEMENTS.md) for planned improvements.
+
 Native Mode applies linguistic rules to already-translated text to adapt it to a specific dialect. It is a post-processing step, not an alternative translation.
 
 | Dialect | Example transformation |
@@ -65,6 +67,8 @@ Native Mode applies linguistic rules to already-translated text to adapt it to a
 | en-US | "I am going to" -> "I'm gonna" |
 | en-GB | "color" -> "colour", "apartment" -> "flat" |
 | es-VE | "de acuerdo" -> "dale", "muchas gracias" -> "gracias a ti" |
+
+> **Note**: Rules are ordered by specificity (multi-word patterns apply first). Single-word replacements may produce unexpected results in some contexts.
 
 To enable: open Settings -> check Native Mode -> select a dialect. Only dialects available for the selected target language are shown.
 
