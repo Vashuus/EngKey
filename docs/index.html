@@ -5,35 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EngKey — Desktop Translator</title>
 <script>(function(){var l=(navigator.language||navigator.userLanguage||'en').substring(0,2);if(l==='es')document.documentElement.className='show-es';try{localStorage.setItem('engkey-lang',l)}catch(e){}})();</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #09090B;
-    --surface: #171717;
-    --surface-raised: #1F1F1F;
-    --border: #2A2A2A;
+    --surface: rgba(23, 23, 23, 0.7);
+    --surface-raised: rgba(40, 40, 40, 0.8);
+    --border: rgba(255, 255, 255, 0.07);
     --fg: #E8E8E8;
-    --text: #9E9E9E;
-    --text-muted: #6B6B6B;
+    --text: #B0B0B0;
+    --text-muted: #787878;
     --accent: #D4A27F;
-    --accent-muted: rgba(212, 162, 127, 0.1);
-    --radius: 6px;
-    --content-w: 720px;
+    --accent-muted: rgba(212, 162, 127, 0.15);
+    --radius: 10px;
+    --content-w: 800px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  .bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+  }
+  .bg-layer .bg-img {
+    position: absolute;
+    inset: -30px;
+    background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+    filter: blur(18px);
+  }
+  .bg-layer .bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    background: transparent;
     color: var(--text);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     line-height: 1.7;
-    font-size: 15px;
+    font-size: 16px;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -46,27 +59,73 @@
 
   header {
     text-align: center;
-    padding: 3rem 2rem 2.5rem;
+    padding: 4rem 2rem 2rem;
   }
 
   header h1 {
-    font-size: 2.8rem;
+    font-size: 3.5rem;
     font-weight: 700;
-    letter-spacing: -0.03em;
     color: var(--fg);
-    margin-bottom: 1.2rem;
-    line-height: 1.2;
+    margin-bottom: 0.8rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
   }
 
   .hero-desc {
     color: var(--text);
-    font-size: 1rem;
-    max-width: 560px;
-    margin: 0 auto;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
     line-height: 1.8;
   }
 
-  .hero-desc strong { color: var(--fg); font-weight: 500; }
+  .hero-desc strong { color: var(--fg); font-weight: 600; }
+
+  .hero-cta {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .btn-hero {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 2rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.05rem;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.4;
+  }
+
+  .btn-hero.primary {
+    background: var(--accent);
+    color: #0a0a0a;
+    border-color: var(--accent);
+  }
+  .btn-hero.primary:hover {
+    background: #e0b894;
+    border-color: #e0b894;
+    transform: translateY(-1px);
+  }
+
+  .btn-hero.secondary {
+    background: rgba(255,255,255,0.06);
+    color: var(--fg);
+    border-color: var(--border);
+  }
+  .btn-hero.secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--text-muted);
+    transform: translateY(-1px);
+  }
 
   main {
     flex: 1;
@@ -77,23 +136,21 @@
   }
 
   h2 {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: var(--fg);
     margin: 2.5rem 0 1rem;
-    letter-spacing: -0.01em;
     line-height: 1.4;
+    text-align: center;
   }
 
   h2:first-of-type { margin-top: 0; }
 
-  .section-label {
-    font-size: 0.75rem;
-    font-weight: 500;
+  .section-desc {
+    text-align: center;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
   }
 
   hr {
@@ -111,7 +168,7 @@
     text-decoration: none;
     font-weight: 500;
     font-size: 0.85rem;
-    transition: all 0.15s;
+    transition: all 0.2s;
     border: 1px solid var(--border);
     cursor: pointer;
     font-family: inherit;
@@ -119,23 +176,23 @@
   }
 
   .btn-primary {
-    background: var(--fg);
-    color: var(--bg);
-    border-color: var(--fg);
+    background: var(--accent);
+    color: #0a0a0a;
+    border-color: var(--accent);
   }
   .btn-primary:hover {
-    background: #ffffff;
-    border-color: #ffffff;
+    background: #e0b894;
+    border-color: #e0b894;
   }
 
   .btn-secondary {
-    background: transparent;
-    color: var(--text);
+    background: rgba(255,255,255,0.05);
+    color: var(--fg);
     border-color: var(--border);
   }
   .btn-secondary:hover {
-    border-color: var(--text);
-    color: var(--fg);
+    background: rgba(255,255,255,0.1);
+    border-color: var(--text-muted);
   }
 
   .platform-grid {
@@ -143,7 +200,6 @@
     flex-wrap: wrap;
     gap: 1px;
     margin: 0.5rem 0 1rem;
-    border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     background: var(--border);
@@ -151,94 +207,96 @@
 
   .platform-card {
     flex: 1;
-    min-width: 180px;
+    min-width: 200px;
     background: var(--surface);
-    padding: 1.5rem 1.5rem 1.5rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 1.8rem 1.5rem;
     text-align: center;
-    transition: background 0.15s;
+    transition: background 0.2s;
   }
-  .platform-card:hover { background: var(--surface-raised); }
+  .platform-card:hover {
+    background: var(--surface-raised);
+  }
 
   .platform-card .platform-icon {
-    font-size: 1.6rem;
-    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
     display: block;
   }
 
   .platform-card h3 {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--fg);
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
   }
 
   .platform-card .detail {
     color: var(--text-muted);
-    font-size: 0.78rem;
-    margin-bottom: 1rem;
+    font-size: 0.82rem;
+    margin-bottom: 1.2rem;
   }
 
   .platform-card .btn-row {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.4rem;
     align-items: center;
   }
-
-  .install-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 0.5rem;
+  .platform-card .btn-row .btn {
+    width: 100%;
+    justify-content: center;
   }
 
-  .install-card h3 {
-    font-size: 0.85rem;
+  .install-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--border);
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .install-item {
+    background: var(--surface);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .install-item .os-label {
     font-weight: 600;
     color: var(--fg);
-    margin-bottom: 0.4rem;
+    min-width: 70px;
+    font-size: 0.9rem;
   }
 
-  .install-card p {
-    font-size: 0.88rem;
-    color: var(--text);
-    margin-bottom: 0.3rem;
-  }
-
-  .install-card p:last-child { margin-bottom: 0; }
-
-  code {
-    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-    font-size: 0.82rem;
+  .install-item code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
     background: var(--accent-muted);
     color: var(--accent);
-    padding: 0.1rem 0.35rem;
-    border-radius: 3px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    word-break: break-all;
   }
 
-  pre.code-block {
-    background: #111113;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.2rem;
-    margin-top: 0.5rem;
-    overflow-x: auto;
-  }
-
-  pre.code-block code {
-    background: none;
-    padding: 0;
-    font-size: 0.8rem;
-    line-height: 1.7;
-    color: var(--text);
+  .install-item .note {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-left: auto;
   }
 
   .features {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     gap: 1px;
-    border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     background: var(--border);
@@ -247,37 +305,83 @@
 
   .feature {
     background: var(--surface);
-    padding: 1.2rem 1rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 1.5rem 1rem;
     text-align: center;
-    transition: background 0.15s;
+    transition: background 0.2s;
   }
   .feature:hover { background: var(--surface-raised); }
 
-  .feature .icon { font-size: 1.3rem; margin-bottom: 0.4rem; display: block; }
-  .feature h4 { font-size: 0.82rem; font-weight: 600; color: var(--fg); margin-bottom: 0.15rem; }
-  .feature p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+  .feature .icon { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+  .feature h4 { font-size: 0.9rem; font-weight: 600; color: var(--fg); margin-bottom: 0.2rem; }
+  .feature p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  .from-source-card {
+    background: var(--surface);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.5rem;
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .from-source-card p {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  pre.code-block {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.2rem;
+    margin-top: 0.5rem;
+    overflow-x: auto;
+  }
+
+  pre.code-block code {
+    font-family: 'Courier New', Courier, monospace;
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
 
   .web-app-section {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     text-align: center;
     padding: 1.5rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   .web-app-section p {
     color: var(--text);
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     margin-bottom: 0.8rem;
+  }
+
+  .web-app-section .btn {
+    font-size: 0.95rem;
+    padding: 0.6rem 1.5rem;
   }
 
   footer {
     text-align: center;
     padding: 2rem;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     border-top: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.3);
   }
 
   footer a {
@@ -288,20 +392,27 @@
   footer a:hover { opacity: 0.8; }
 
   @media (max-width: 700px) {
-    header h1 { font-size: 2rem; }
-    header { padding: 2rem 1.5rem 1.5rem; }
+    header h1 { font-size: 2.4rem; }
+    header { padding: 2.5rem 1.5rem 1.5rem; }
     main { padding: 0 1.5rem 3rem; }
     .features { grid-template-columns: repeat(2, 1fr); }
     .platform-card { min-width: 100%; }
+    .install-item { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .install-item .note { margin-left: 0; }
+    .btn-hero { padding: 0.7rem 1.5rem; font-size: 0.95rem; }
   }
 
   @media (max-width: 400px) {
-    header h1 { font-size: 1.6rem; }
+    header h1 { font-size: 1.8rem; }
     .features { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
+<div class="bg-layer">
+  <div class="bg-img"></div>
+  <div class="bg-overlay"></div>
+</div>
 
 <header>
   <h1>EngKey</h1>
@@ -317,13 +428,21 @@
     OpenAI o LibreTranslate. Sin pesta&ntilde;as del navegador, sin desorden &mdash; solo una ventana
     limpia y siempre disponible.
   </p>
+  <div class="hero-cta">
+    <a href="#download" class="btn-hero primary lang-en-block">&#8595; Download EngKey</a>
+    <a href="#download" class="btn-hero primary lang-es-block">&#8595; Descargar EngKey</a>
+    <a href="https://github.com/Vashuus/EngKey" class="btn-hero secondary">View on GitHub</a>
+  </div>
 </header>
 
 <main>
-  <p class="section-label lang-en-block">Download</p>
-  <p class="section-label lang-es-block">Descargar</p>
+  <section id="download">
+    <h2 class="lang-en-block">Download</h2>
+    <h2 class="lang-es-block">Descargar</h2>
+    <p class="section-desc lang-en-block">Choose your platform and download the binary.</p>
+    <p class="section-desc lang-es-block">Elige tu plataforma y descarga el binario.</p>
 
-  <div class="platform-grid">
+    <div class="platform-grid">
     <div class="platform-card">
       <span class="platform-icon">🐧</span>
       <h3>Linux</h3>
@@ -354,31 +473,35 @@
       </div>
     </div>
   </div>
+</section>
 
-  <h2 class="lang-en-block">Installation</h2>
-  <h2 class="lang-es-block">Instalaci&oacute;n</h2>
+<section>
+  <h2 class="lang-en-block">Quick Start</h2>
+  <h2 class="lang-es-block">Inicio R&aacute;pido</h2>
 
-  <div class="install-card">
-    <h3>Linux</h3>
-    <p class="lang-en-block"><code>chmod +x EngKey-Linux-x86_64 &amp;&amp; ./EngKey-Linux-x86_64</code></p>
-    <p class="lang-es-block"><code>chmod +x EngKey-Linux-x86_64 &amp;&amp; ./EngKey-Linux-x86_64</code></p>
-    <p class="lang-en-block">Or via .deb: <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></p>
-    <p class="lang-es-block">O con .deb: <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></p>
+  <div class="install-grid">
+    <div class="install-item">
+      <span class="os-label">Linux</span>
+      <code>chmod +x EngKey-Linux-x86_64 &amp;&amp; ./EngKey-Linux-x86_64</code>
+      <span class="note lang-en-block">or <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></span>
+      <span class="note lang-es-block">o <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></span>
+    </div>
+    <div class="install-item">
+      <span class="os-label">macOS</span>
+      <code>chmod +x EngKey-macOS-x86_64 &amp;&amp; ./EngKey-macOS-x86_64</code>
+    </div>
+    <div class="install-item">
+      <span class="os-label">Windows</span>
+      <code>EngKey-Windows-x86_64.exe</code>
+      <span class="note lang-en-block">Double-click to run</span>
+      <span class="note lang-es-block">Haz doble clic para ejecutar</span>
+    </div>
   </div>
-
-  <div class="install-card">
-    <h3>macOS</h3>
-    <p><code>chmod +x EngKey-macOS-x86_64 &amp;&amp; ./EngKey-macOS-x86_64</code></p>
-  </div>
-
-  <div class="install-card">
-    <h3>Windows</h3>
-    <p class="lang-en-block">Double-click <code>EngKey-Windows-x86_64.exe</code> to run.</p>
-    <p class="lang-es-block">Haz doble clic en <code>EngKey-Windows-x86_64.exe</code>.</p>
-  </div>
+</section>
 
   <hr>
 
+<section>
   <h2 class="lang-en-block">Features</h2>
   <h2 class="lang-es-block">Caracter&iacute;sticas</h2>
 
@@ -411,13 +534,15 @@
       <p class="lang-es-block">~22 MB, sin runtime necesario</p>
     </div>
   </div>
+</section>
 
-  <hr>
+<hr>
 
+<section>
   <h2 class="lang-en-block">From Source</h2>
   <h2 class="lang-es-block">Desde C&oacute;digo</h2>
 
-  <div class="install-card">
+  <div class="from-source-card">
     <p class="lang-en-block">Requires Python 3.12+</p>
     <p class="lang-es-block">Requiere Python 3.12+</p>
     <pre class="code-block"><code>git clone https://github.com/Vashuus/EngKey.git
@@ -427,13 +552,14 @@ source .venv/bin/activate
 pip install -r requirements.txt
 python3 engkey.py</code></pre>
   </div>
+</section>
 
-  <div class="web-app-section">
+<section class="web-app-section">
     <p class="lang-en-block">Prefer to use it in your browser? Try the web version.</p>
     <p class="lang-es-block">Prefieres usarlo en el navegador? Prueba la versi&oacute;n web.</p>
     <a href="app/" class="btn btn-secondary lang-en-block">Open Web App</a>
     <a href="app/" class="btn btn-secondary lang-es-block">Abrir Web App</a>
-  </div>
+  </section>
 </main>
 
 <footer>
