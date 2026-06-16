@@ -4,415 +4,363 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EngKey — Desktop Translator</title>
+<script>(function(){var l='en';try{l=localStorage.getItem('engkey-lang')||'en'}catch(e){}if(l==='es')document.documentElement.className='show-es'})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
-
   :root {
-    --bg: #0f0f15;
-    --surface: #181820;
-    --surface-soft: #1d1d28;
-    --fg: #e2e2ec;
-    --accent: #7aa9f5;
-    --accent-soft: rgba(122, 169, 245, 0.12);
-    --accent-glow: rgba(122, 169, 245, 0.15);
-    --muted: #4a4a5a;
-    --subtext: #9090a8;
-    --radius: 16px;
-    --radius-sm: 10px;
+    --bg: #09090B;
+    --surface: #171717;
+    --surface-raised: #1F1F1F;
+    --border: #2A2A2A;
+    --fg: #E8E8E8;
+    --text: #9E9E9E;
+    --text-muted: #6B6B6B;
+    --accent: #D4A27F;
+    --accent-muted: rgba(212, 162, 127, 0.1);
+    --radius: 6px;
+    --content-w: 720px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     background: var(--bg);
-    color: var(--fg);
+    color: var(--text);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    line-height: 1.6;
+    line-height: 1.7;
+    font-size: 15px;
     -webkit-font-smoothing: antialiased;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background:
-      radial-gradient(ellipse at 20% 20%, rgba(122, 169, 245, 0.04) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(122, 169, 245, 0.03) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.01) 0%, transparent 30%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* ── Language toggle ── */
   .lang-bar {
-    position: relative;
-    z-index: 2;
     display: flex;
     justify-content: flex-end;
     gap: 0.25rem;
-    padding: 1rem 2rem 0;
-    max-width: 820px;
+    padding: 1.5rem 2rem 0;
+    max-width: var(--content-w);
     margin: 0 auto;
     width: 100%;
   }
 
   .lang-btn {
     background: none;
-    border: 1px solid var(--muted);
-    color: var(--subtext);
-    padding: 0.3rem 0.7rem;
-    border-radius: 6px;
-    font-size: 0.78rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s;
     font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
-  .lang-btn:hover { border-color: var(--accent); color: var(--fg); }
+  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
   .lang-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
-  /* ── i18n hide/show ── */
-  .lang-es, .lang-en { display: none; }
-  body.lang-es .lang-es { display: inline; }
-  body.lang-es .lang-es-block { display: block; }
-  body.lang-en .lang-en { display: inline; }
-  body.lang-en .lang-en-block { display: block; }
-  body.lang-es .lang-en, body.lang-en .lang-es,
-  body.lang-es .lang-en-block, body.lang-en .lang-es-block { display: none; }
+  .lang-es, .lang-es-block { display: none; }
+  html.show-es .lang-en,
+  html.show-es .lang-en-block { display: none; }
+  html.show-es .lang-es,
+  html.show-es .lang-es-block { display: block; }
+  html.show-es a.lang-es-block { display: inline-flex; }
 
-  body:not(.lang-es):not(.lang-en) .lang-en, body:not(.lang-es):not(.lang-en) .lang-en-block { display: inline; }
-
-  /* ── Header ── */
   header {
-    position: relative;
-    z-index: 1;
     text-align: center;
-    padding: 2.5rem 2rem 2rem;
-    background: linear-gradient(180deg, rgba(24, 24, 32, 0.95) 0%, transparent 100%);
+    padding: 3rem 2rem 2.5rem;
   }
 
   header h1 {
-    font-size: 3rem;
+    font-size: 2.8rem;
     font-weight: 700;
     letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #89b4fa, #b4d0fb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
+    color: var(--fg);
+    margin-bottom: 1.2rem;
+    line-height: 1.2;
   }
 
   .hero-desc {
-    color: var(--subtext);
-    font-size: 1.1rem;
-    max-width: 540px;
+    color: var(--text);
+    font-size: 1rem;
+    max-width: 560px;
     margin: 0 auto;
-    font-weight: 400;
-    line-height: 1.7;
+    line-height: 1.8;
   }
 
-  .hero-desc strong { color: var(--fg); font-weight: 600; }
+  .hero-desc strong { color: var(--fg); font-weight: 500; }
 
-  /* ── Main ── */
   main {
-    position: relative;
-    z-index: 1;
     flex: 1;
-    max-width: 820px;
+    max-width: var(--content-w);
     margin: 0 auto;
-    padding: 0.5rem 2rem 3rem;
+    padding: 0 2rem 4rem;
     width: 100%;
   }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--fg);
-    margin: 2rem 0 1rem;
+    margin: 2.5rem 0 1rem;
     letter-spacing: -0.01em;
+    line-height: 1.4;
   }
 
   h2:first-of-type { margin-top: 0; }
 
-  /* ── Buttons ── */
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.65rem 1.4rem;
-    border-radius: var(--radius-sm);
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.25s ease;
-    border: 1px solid transparent;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
     cursor: pointer;
+    font-family: inherit;
+    line-height: 1.4;
   }
 
   .btn-primary {
-    background: var(--accent);
-    color: #0f0f15;
-    box-shadow: 0 2px 12px rgba(122, 169, 245, 0.25);
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
   }
   .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(122, 169, 245, 0.35);
+    background: #ffffff;
+    border-color: #ffffff;
   }
 
   .btn-secondary {
-    background: var(--surface-soft);
-    color: var(--fg);
-    border-color: var(--muted);
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
   }
   .btn-secondary:hover {
-    background: rgba(74, 74, 90, 0.4);
-    transform: translateY(-1px);
+    border-color: var(--text);
+    color: var(--fg);
   }
 
-  /* ── Platform cards (Downloads) ── */
   .platform-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
+    gap: 1px;
     margin: 0.5rem 0 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--border);
   }
 
   .platform-card {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
     background: var(--surface);
-    border-radius: var(--radius);
-    padding: 1.8rem 1.5rem;
+    padding: 1.5rem 1.5rem 1.5rem;
     text-align: center;
-    border: 1px solid rgba(74, 74, 90, 0.25);
-    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-    position: relative;
-    overflow: hidden;
+    transition: background 0.15s;
   }
-  .platform-card:hover {
-    border-color: rgba(122, 169, 245, 0.2);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-  }
+  .platform-card:hover { background: var(--surface-raised); }
 
   .platform-card .platform-icon {
-    font-size: 2rem;
-    margin-bottom: 0.6rem;
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
     display: block;
   }
 
   .platform-card h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: 0.2rem;
+    color: var(--fg);
+    margin-bottom: 0.15rem;
   }
 
   .platform-card .detail {
-    color: var(--muted);
-    font-size: 0.8rem;
-    margin-bottom: 1.2rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-bottom: 1rem;
   }
 
   .platform-card .btn-row {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
     align-items: center;
   }
 
-  /* ── Features ── */
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 0.8rem;
-    margin: 0.5rem 0 1.5rem;
-  }
-
-  .feature {
+  .install-card {
     background: var(--surface);
-    border-radius: var(--radius-sm);
-    padding: 1.2rem 1rem;
-    text-align: center;
-    border: 1px solid rgba(74, 74, 90, 0.25);
-    transition: border-color 0.25s, transform 0.25s;
-  }
-  .feature:hover {
-    border-color: rgba(122, 169, 245, 0.25);
-    transform: translateY(-2px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
-  .feature .icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
-  .feature h4 { font-size: 0.85rem; font-weight: 600; color: var(--fg); margin-bottom: 0.2rem; }
-  .feature p { font-size: 0.8rem; color: var(--subtext); line-height: 1.4; }
-
-  /* ── Cards (Installation, Source) ── */
-  .card {
-    background: var(--surface);
-    border-radius: var(--radius-sm);
-    padding: 1.3rem 1.5rem;
-    margin-bottom: 0.8rem;
-    border: 1px solid rgba(74, 74, 90, 0.2);
-    transition: border-color 0.2s;
-  }
-  .card:hover { border-color: rgba(74, 74, 90, 0.35); }
-
-  .card h3 {
-    font-size: 0.95rem;
+  .install-card h3 {
+    font-size: 0.85rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    color: var(--fg);
+    margin-bottom: 0.4rem;
   }
 
-  .card p {
-    color: var(--subtext);
+  .install-card p {
     font-size: 0.88rem;
-    margin-bottom: 0.5rem;
+    color: var(--text);
+    margin-bottom: 0.3rem;
   }
 
-  .card p:last-child { margin-bottom: 0; }
+  .install-card p:last-child { margin-bottom: 0; }
 
   code {
-    font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
-    background: rgba(122, 169, 245, 0.08);
-    color: var(--accent);
-    padding: 0.15rem 0.45rem;
-    border-radius: 5px;
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
     font-size: 0.82rem;
+    background: var(--accent-muted);
+    color: var(--accent);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
   }
 
   pre.code-block {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: var(--radius-sm);
+    background: #111113;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 1rem 1.2rem;
-    margin-top: 0.6rem;
-    border: 1px solid rgba(74, 74, 90, 0.15);
+    margin-top: 0.5rem;
     overflow-x: auto;
   }
 
   pre.code-block code {
     background: none;
     padding: 0;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     line-height: 1.7;
-    color: var(--subtext);
+    color: var(--text);
   }
 
-  /* ── Web app CTA (subtle, footer area) ── */
-  .web-app-section {
-    margin-top: 2.5rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(74, 74, 90, 0.15);
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--border);
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .feature {
+    background: var(--surface);
+    padding: 1.2rem 1rem;
     text-align: center;
+    transition: background 0.15s;
+  }
+  .feature:hover { background: var(--surface-raised); }
+
+  .feature .icon { font-size: 1.3rem; margin-bottom: 0.4rem; display: block; }
+  .feature h4 { font-size: 0.82rem; font-weight: 600; color: var(--fg); margin-bottom: 0.15rem; }
+  .feature p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+  .web-app-section {
+    margin-top: 1.5rem;
+    text-align: center;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
   }
 
   .web-app-section p {
-    color: var(--subtext);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    color: var(--text);
+    font-size: 0.88rem;
+    margin-bottom: 0.8rem;
   }
 
-  .web-app-section .btn-ghost {
-    background: var(--surface);
-    color: var(--subtext);
-    border-color: rgba(74, 74, 90, 0.3);
-    font-size: 0.85rem;
-  }
-  .web-app-section .btn-ghost:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-
-  /* ── Divider ── */
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(74, 74, 90, 0.3), transparent);
-    margin: 1.5rem 0;
-  }
-
-  /* ── Footer ── */
   footer {
-    position: relative;
-    z-index: 1;
     text-align: center;
     padding: 2rem;
-    color: var(--muted);
-    font-size: 0.82rem;
-    border-top: 1px solid rgba(74, 74, 90, 0.15);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
   }
 
   footer a {
     color: var(--accent);
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.15s;
   }
   footer a:hover { opacity: 0.8; }
 
-  /* ── Responsive ── */
   @media (max-width: 700px) {
-    header h1 { font-size: 2.2rem; }
-    header p { font-size: 1rem; }
-    main { padding: 1rem; }
+    header h1 { font-size: 2rem; }
+    header { padding: 2rem 1.5rem 1.5rem; }
+    main { padding: 0 1.5rem 3rem; }
     .features { grid-template-columns: repeat(2, 1fr); }
     .platform-card { min-width: 100%; }
   }
 
   @media (max-width: 400px) {
-    header { padding: 1.5rem 1rem; }
-    header h1 { font-size: 1.8rem; }
+    header h1 { font-size: 1.6rem; }
     .features { grid-template-columns: 1fr; }
+    .lang-bar { padding: 1rem 1rem 0; }
   }
 </style>
 </head>
 <body>
 
-<!-- Language toggle -->
 <div class="lang-bar">
-  <button class="lang-btn active" data-lang="en" onclick="switchLang('en')">EN</button>
+  <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
   <button class="lang-btn" data-lang="es" onclick="switchLang('es')">ES</button>
 </div>
 
 <header>
   <h1>EngKey</h1>
-
-  <!-- English description -->
   <p class="hero-desc lang-en-block">
-    A <strong>real-time desktop translator</strong> that runs on your computer.
+    A <strong>real-time desktop translator</strong> that lives in your computer.
     Type in any language, get instant translations using Google, DeepL, Microsoft,
-    OpenAI, or LibreTranslate. No internet browser tabs needed — just a clean,
-    always-available floating window.
+    OpenAI, or LibreTranslate. No browser tabs, no clutter &mdash; just a clean,
+    always-available window.
   </p>
-
-  <!-- Spanish description -->
   <p class="hero-desc lang-es-block">
-    Un <strong>traductor de escritorio en tiempo real</strong> que funciona en tu computadora.
-    Escribe en cualquier idioma y obtén traducciones al instante usando Google, DeepL, Microsoft,
-    OpenAI o LibreTranslate. Sin necesidad de pestañas del navegador, solo una ventana
-    flotante limpia y siempre disponible.
+    Un <strong>traductor de escritorio en tiempo real</strong> que vive en tu computadora.
+    Escribe en cualquier idioma y obt&eacute;n traducciones al instante usando Google, DeepL, Microsoft,
+    OpenAI o LibreTranslate. Sin pesta&ntilde;as del navegador, sin desorden &mdash; solo una ventana
+    limpia y siempre disponible.
   </p>
 </header>
 
 <main>
-  <!-- DOWNLOAD (2nd priority, but feels like main action) -->
-  <h2 class="lang-en-block">Download</h2>
-  <h2 class="lang-es-block">Descargar</h2>
-  <p style="color:var(--subtext);margin-bottom:0.8rem;font-size:0.9rem" class="lang-en-block">
-    Portable binaries &mdash; no installation required.
-  </p>
-  <p style="color:var(--subtext);margin-bottom:0.8rem;font-size:0.9rem" class="lang-es-block">
-    Binarios port&aacute;tiles &mdash; sin instalaci&oacute;n.
-  </p>
+  <p class="section-label lang-en-block">Download</p>
+  <p class="section-label lang-es-block">Descargar</p>
 
   <div class="platform-grid">
     <div class="platform-card">
       <span class="platform-icon">🐧</span>
       <h3>Linux</h3>
-      <p class="detail">x86_64 · X11 / Wayland</p>
+      <p class="detail">x86_64 &middot; X11 / Wayland</p>
       <div class="btn-row">
         <a href="https://github.com/Vashuus/EngKey/releases/latest/download/EngKey-Linux-x86_64" class="btn btn-primary lang-en-block">Download Binary</a>
         <a href="https://github.com/Vashuus/EngKey/releases/latest/download/EngKey-Linux-x86_64" class="btn btn-primary lang-es-block">Descargar Binary</a>
@@ -420,7 +368,6 @@
         <a href="https://github.com/Vashuus/EngKey/releases/latest/download/engkey_1.2.0_amd64.deb" class="btn btn-secondary lang-es-block">Descargar .deb</a>
       </div>
     </div>
-
     <div class="platform-card">
       <span class="platform-icon">🍎</span>
       <h3>macOS</h3>
@@ -430,7 +377,6 @@
         <a href="https://github.com/Vashuus/EngKey/releases/latest/download/EngKey-macOS-x86_64" class="btn btn-primary lang-es-block">Descargar Binary</a>
       </div>
     </div>
-
     <div class="platform-card">
       <span class="platform-icon">🪟</span>
       <h3>Windows</h3>
@@ -442,58 +388,56 @@
     </div>
   </div>
 
-  <!-- HOW TO USE (mini section) -->
-  <h2 class="lang-en-block">How to Use</h2>
-  <h2 class="lang-es-block">C&oacute;mo Usar</h2>
+  <h2 class="lang-en-block">Installation</h2>
+  <h2 class="lang-es-block">Instalaci&oacute;n</h2>
 
-  <div class="card">
+  <div class="install-card">
     <h3>Linux</h3>
     <p class="lang-en-block"><code>chmod +x EngKey-Linux-x86_64 &amp;&amp; ./EngKey-Linux-x86_64</code></p>
     <p class="lang-es-block"><code>chmod +x EngKey-Linux-x86_64 &amp;&amp; ./EngKey-Linux-x86_64</code></p>
-    <p class="lang-en-block">Or install via .deb: <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></p>
-    <p class="lang-es-block">O instalar con .deb: <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></p>
+    <p class="lang-en-block">Or via .deb: <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></p>
+    <p class="lang-es-block">O con .deb: <code>sudo dpkg -i engkey_1.2.0_amd64.deb</code></p>
   </div>
 
-  <div class="card">
+  <div class="install-card">
     <h3>macOS</h3>
     <p><code>chmod +x EngKey-macOS-x86_64 &amp;&amp; ./EngKey-macOS-x86_64</code></p>
   </div>
 
-  <div class="card">
+  <div class="install-card">
     <h3>Windows</h3>
     <p class="lang-en-block">Double-click <code>EngKey-Windows-x86_64.exe</code> to run.</p>
-    <p class="lang-es-block">Haz doble clic en <code>EngKey-Windows-x86_64.exe</code> para ejecutar.</p>
+    <p class="lang-es-block">Haz doble clic en <code>EngKey-Windows-x86_64.exe</code>.</p>
   </div>
 
-  <div class="divider"></div>
+  <hr>
 
-  <!-- FEATURES -->
   <h2 class="lang-en-block">Features</h2>
   <h2 class="lang-es-block">Caracter&iacute;sticas</h2>
 
   <div class="features">
     <div class="feature">
-      <div class="icon">⚡</div>
+      <span class="icon">⚡</span>
       <h4 class="lang-en-block">Real-time</h4>
       <h4 class="lang-es-block">Tiempo real</h4>
       <p class="lang-en-block">Translates as you type with smart debounce</p>
       <p class="lang-es-block">Traduce mientras escribes</p>
     </div>
     <div class="feature">
-      <div class="icon">🔌</div>
+      <span class="icon">🔌</span>
       <h4 class="lang-en-block">5 Engines</h4>
       <h4 class="lang-es-block">5 Motores</h4>
       <p>Google, DeepL, Microsoft, OpenAI, LibreTranslate</p>
     </div>
     <div class="feature">
-      <div class="icon">🌎</div>
+      <span class="icon">🌎</span>
       <h4 class="lang-en-block">Native Mode</h4>
       <h4 class="lang-es-block">Modo Nativo</h4>
       <p class="lang-en-block">Regional dialect post-processing</p>
       <p class="lang-es-block">Post-procesamiento de dialectos</p>
     </div>
     <div class="feature">
-      <div class="icon">📦</div>
+      <span class="icon">📦</span>
       <h4 class="lang-en-block">Portable</h4>
       <h4 class="lang-es-block">Port&aacute;til</h4>
       <p class="lang-en-block">~22 MB, no runtime required</p>
@@ -501,13 +445,12 @@
     </div>
   </div>
 
-  <div class="divider"></div>
+  <hr>
 
-  <!-- BUILD FROM SOURCE -->
   <h2 class="lang-en-block">From Source</h2>
   <h2 class="lang-es-block">Desde C&oacute;digo</h2>
 
-  <div class="card">
+  <div class="install-card">
     <p class="lang-en-block">Requires Python 3.12+</p>
     <p class="lang-es-block">Requiere Python 3.12+</p>
     <pre class="code-block"><code>git clone https://github.com/Vashuus/EngKey.git
@@ -518,12 +461,11 @@ pip install -r requirements.txt
 python3 engkey.py</code></pre>
   </div>
 
-  <!-- WEB VERSION (lower, subtle) -->
   <div class="web-app-section">
     <p class="lang-en-block">Prefer to use it in your browser? Try the web version.</p>
     <p class="lang-es-block">Prefieres usarlo en el navegador? Prueba la versi&oacute;n web.</p>
-    <a href="app/" class="btn btn-ghost lang-en-block">Open Web App</a>
-    <a href="app/" class="btn btn-ghost lang-es-block">Abrir Web App</a>
+    <a href="app/" class="btn btn-secondary lang-en-block">Open Web App</a>
+    <a href="app/" class="btn btn-secondary lang-es-block">Abrir Web App</a>
   </div>
 </main>
 
@@ -533,7 +475,7 @@ python3 engkey.py</code></pre>
 
 <script>
 function switchLang(lang) {
-  document.body.className = 'lang-' + lang;
+  document.documentElement.className = lang === 'es' ? 'show-es' : '';
   document.querySelectorAll('.lang-btn').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-lang') === lang);
   });
