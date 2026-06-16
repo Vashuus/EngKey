@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EngKey — Desktop Translator</title>
-<script>(function(){var l='en';try{l=localStorage.getItem('engkey-lang')||'en'}catch(e){}if(l==='es')document.documentElement.className='show-es'})();</script>
+<script>(function(){var l=(navigator.language||navigator.userLanguage||'en').substring(0,2);if(l==='es')document.documentElement.className='show-es';try{localStorage.setItem('engkey-lang',l)}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -46,23 +46,6 @@
     margin: 0 auto;
     width: 100%;
   }
-
-  .lang-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius);
-    font-size: 0.75rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-  .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .lang-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
   .lang-es, .lang-es-block { display: none; }
   html.show-es .lang-en,
@@ -331,11 +314,6 @@
 </head>
 <body>
 
-<div class="lang-bar">
-  <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
-  <button class="lang-btn" data-lang="es" onclick="switchLang('es')">ES</button>
-</div>
-
 <header>
   <h1>EngKey</h1>
   <p class="hero-desc lang-en-block">
@@ -474,17 +452,9 @@ python3 engkey.py</code></pre>
 </footer>
 
 <script>
-function switchLang(lang) {
-  document.documentElement.className = lang === 'es' ? 'show-es' : '';
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-  });
-  try { localStorage.setItem('engkey-lang', lang); } catch(e) {}
-}
-(function() {
-  var saved = 'en';
-  try { saved = localStorage.getItem('engkey-lang') || 'en'; } catch(e) {}
-  switchLang(saved);
+(function(){
+  var es = document.documentElement.className === 'show-es';
+  (es ? document.querySelectorAll('.lang-en,.lang-en-block') : document.querySelectorAll('.lang-es,.lang-es-block')).forEach(function(el){el.remove()});
 })();
 </script>
 
